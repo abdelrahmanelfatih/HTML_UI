@@ -1,7 +1,7 @@
 let items = [];
 let total = 0.00;
 
-function addTitle() {
+async function addTitle() {
     const titleInput = document.getElementById('title');
     const title = titleInput.value.trim();
 
@@ -39,6 +39,30 @@ function renderItems() {
     });
 }
 
+// Function to send invoice data to the backend
+async function sendInvoiceData(invoiceData) {
+    try {
+        const response = await fetch('https://eilio10.pythonanywhere.com/send_invoice_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(invoiceData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        console.log('Server response:', result);
+        alert('Invoice successfully sent to Telegram!');
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        alert('Failed to send invoice. Please check the console for details.');
+    }
+}
+
 document.getElementById('invoice-form').onsubmit = function (e) {
     e.preventDefault();
     const title = document.getElementById('title').value;
@@ -51,16 +75,29 @@ document.getElementById('invoice-form').onsubmit = function (e) {
         protectContent: document.getElementById('protect-content').checked,
     };
     const image = document.getElementById('file-upload').files[0];
+    
+    // Convert image to base64 if needed
+    const imagePromise = new Promise((resolve, reject) => {
+        if (image) {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(image);
+        } else {
+            resolve(null);
+        }
+    });
 
-    const invoiceData = {
-        title,
-        description,
-        currency,
-        items,
-        total,
-        settings,
-        image,
-    };
-    console.log("Invoice Data:", invoiceData);
-    alert('Invoice Created! Check the console for details.');
+    imagePromise.then(imageData => {
+        const invoiceData = {
+            title,
+            description,
+            currency,
+            items,
+            total,
+            settings,
+            image: imageData,
+        };
+        sendInvoiceData(invoiceData);
+    });
 };
