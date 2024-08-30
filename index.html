@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Creator</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
@@ -68,10 +69,20 @@
                 </div>
             </div>
 
-            <button type="submit" class="button">Create Invoice</button>
+            <!-- Removed the Create Invoice button -->
         </form>
     </div>
 
-    <script src="scripts.js"></script>
+    <script>
+        Telegram.WebApp.ready(); // Initializes the Telegram WebApp
+
+        // Configure the main button
+        Telegram.WebApp.MainButton.setText('Create Invoice')
+            .show() // Show the main button
+            .onClick(function() {
+                // When the main button is clicked, send a text payload to the bot
+                Telegram.WebApp.sendData("Invoice created!"); // This sends the data to the bot
+            });
+    </script>
 </body>
 </html>
