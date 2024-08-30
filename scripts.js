@@ -42,7 +42,7 @@ function renderItems() {
 // Function to send invoice data to the backend
 async function sendInvoiceData(invoiceData) {
     try {
-        const response = await fetch('https://eilio10.pythonanywhere.com/send_invoice_data', {
+        const response = await fetch('https://66c9-2001-16a2-6f02-ed00-79a0-bbc6-4627-306e.ngrok-free.app', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
