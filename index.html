@@ -100,22 +100,34 @@
     <script>
         function createInvoice() {
             const data = {
-                message: "skill issue"
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                currency: document.getElementById('currency').value,
+                requireName: document.getElementById('requireName').checked,
+                requireEmail: document.getElementById('requireEmail').checked,
+                requirePhone: document.getElementById('requirePhone').checked,
+                protectContent: document.getElementById('protectContent').checked
             };
 
-            fetch('http://127.0.0.1:8000/send', {  // Update the URL to match your FastAPI backend
+            fetch('http://127.0.0.1:8000/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('404 ERROR');
+                }
+            })
             .then(data => {
-                alert(`Response from backend: ${data.message}`);
+                alert(data.message);
             })
             .catch((error) => {
-                console.error('Error:', error);
+                alert(error.message);
             });
         }
     </script>
