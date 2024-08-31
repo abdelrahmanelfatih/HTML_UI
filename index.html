@@ -3,86 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Creator</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Create Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .container h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .form-group .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        .form-group .checkbox-group label {
+            margin: 0;
+        }
+        .form-group .checkbox-group input {
+            margin-right: 5px;
+        }
+        .create-invoice-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .create-invoice-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <button onclick="alert('Cancelled!')">Cancel</button>
-            <h1>Mr Crab <span>bot</span></h1>
+        <h2>Create Invoice</h2>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" placeholder="Item title">
         </div>
-
-        <form id="invoice-form">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" placeholder="Item title">
-                <button type="button" onclick="addTitle()">Add Title</button>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-                <div class="input-group">
-                    <input type="text" id="description" placeholder="Product description, 1-255 characters">
-                    <label class="attach-btn">
-                        <img src="https://cdn-icons-png.flaticon.com/512/860/860790.png" alt="Attach">
-                        <input type="file" id="file-upload">
-                    </label>
-                </div>
-                <small>Product description, 1-255 characters</small>
-            </div>
-
-            <div class="form-group">
-                <label for="currency">Currency</label>
-                <select id="currency">
-                    <option value="USD">USD</option>
-                    <option value="EUR">EURO</option>
-                    <option value="GBP">GBP</option>
-                    <option value="MYR">MYR</option>
-                    <option value="CNY">Renminbi</option>
-                </select>
-            </div>
-
-            <ul id="item-list" class="item-list">
-                <!-- Items will be added here dynamically -->
-            </ul>
-
-            <div id="total" class="total">Total: 0.00</div>
-
-            <div class="invoice-settings">
-                <div>
-                    <label for="require-name">Require name</label>
-                    <input type="checkbox" id="require-name">
-                </div>
-                <div>
-                    <label for="require-email">Require email</label>
-                    <input type="checkbox" id="require-email">
-                </div>
-                <div>
-                    <label for="require-phone">Require phone number</label>
-                    <input type="checkbox" id="require-phone">
-                </div>
-                <div>
-                    <label for="protect-content">Protect content</label>
-                    <input type="checkbox" id="protect-content">
-                </div>
-            </div>
-
-            <!-- Removed the Create Invoice button -->
-        </form>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Product description, 1-255 characters"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <select id="currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requireName">
+            <label for="requireName">Require name</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requireEmail">
+            <label for="requireEmail">Require email</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requirePhone">
+            <label for="requirePhone">Require phone number</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="protectContent">
+            <label for="protectContent">Protect content</label>
+        </div>
+        <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
     </div>
 
     <script>
-        Telegram.WebApp.ready(); // Initializes the Telegram WebApp
+        function createInvoice() {
+            const data = {
+                message: "lol"
+            };
 
-        // Configure the main button
-        Telegram.WebApp.MainButton.setText('Create Invoice')
-            .show() // Show the main button
-            .onClick(function() {
-                // When the main button is clicked, send a text payload to the bot
-                Telegram.WebApp.sendData("Invoice created!"); // This sends the data to the bot
+            fetch('http://127.0.0.1:8000/send', {  // Update the URL to match your FastAPI backend
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Response from backend: ${data.message}`);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
             });
+        }
     </script>
 </body>
 </html>
