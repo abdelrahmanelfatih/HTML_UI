@@ -97,6 +97,7 @@
         <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
     </div>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         function createInvoice() {
             const data = {
@@ -106,10 +107,11 @@
                 requireName: document.getElementById('requireName').checked,
                 requireEmail: document.getElementById('requireEmail').checked,
                 requirePhone: document.getElementById('requirePhone').checked,
-                protectContent: document.getElementById('protectContent').checked
+                protectContent: document.getElementById('protectContent').checked,
+                chatId: Telegram.WebApp.initDataUnsafe.user.id  // Adding chat ID to the data
             };
 
-            fetch('http://localhost:8000/send', {
+            fetch('http://0.0.0.0:8000/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
