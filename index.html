@@ -68,11 +68,17 @@
             font-weight: bold;
             text-align: right;
         }
+        .error-message {
+            color: red;
+            margin-bottom: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Create Invoice</h2>
+        <div id="error-message" class="error-message"></div>
         <div id="items-container"></div>
         <button class="add-item-btn" onclick="addItem()">Add Item</button>
         <div class="form-group">
@@ -149,7 +155,15 @@
             document.getElementById('total').textContent = total.toFixed(2);
         }
 
+        function displayError(message) {
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = message;
+        }
+
         function createInvoice() {
+            // Clear previous error messages
+            displayError('');
+
             items = items.map((item, index) => ({
                 title: document.getElementById(`title-${index}`).value,
                 quantity: parseFloat(document.getElementById(`quantity-${index}`).value) || 0,
@@ -158,7 +172,7 @@
 
             const data = {
                 items: items,
-                total: items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2),  // Calculate total
+                total: items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2),
                 currency: document.getElementById('currency').value,
                 requireName: document.getElementById('requireName').checked,
                 requireEmail: document.getElementById('requireEmail').checked,
@@ -175,18 +189,25 @@
                 body: JSON.stringify(data),
             })
             .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('404 ERROR');
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.detail || 'Unknown error occurred');
+                    });
                 }
+                return response.json();
             })
             .then(data => {
                 alert(`Invoice created successfully. Total: $${data.total}`);
-                // You can also handle displaying the items and their details if needed
             })
             .catch((error) => {
-                alert(error.message);
+                // Check error message for specific known issues and display appropriate messages
+                if (error.message.includes("non-empty title")) {
+                    displayError("Error: Item titles cannot be empty. Please provide a title for each item.");
+                } else if (error.message.includes("total amount does not match")) {
+                    displayError("Error: The total amount does not match the sum of item prices. Please check the prices and quantities.");
+                } else {
+                    displayError(`Error: ${error.message}`);
+                }
             });
         }
     </script>
