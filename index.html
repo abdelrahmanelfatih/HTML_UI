@@ -97,7 +97,7 @@
         <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
     </div>
 
-    <script src="https://2a17-2001-16a2-6f02-ed00-992-1920-12fa-a27d.ngrok-free.app/send"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         function createInvoice() {
             const data = {
@@ -111,7 +111,7 @@
                 chatId: Telegram.WebApp.initDataUnsafe.user.id  // Adding chat ID to the data
             };
 
-            fetch('http://0.0.0.0:8000/send', {
+            fetch('https://2a17-2001-16a2-6f02-ed00-992-1920-12fa-a27d.ngrok-free.app/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
