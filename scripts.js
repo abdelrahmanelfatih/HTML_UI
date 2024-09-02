@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
 
-        fetch('https://your-backend-api-url.com/invoices', {
+        fetch('https://3fb0-2001-16a2-71a5-8900-153c-dad7-eae8-b0ec.ngrok-free.app/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
