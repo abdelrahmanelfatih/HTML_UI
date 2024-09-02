@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    window.Telegram.WebApp.ready(); // Ensure SDK is ready
+
     const titleInput = document.getElementById("title");
     const addTitleButton = document.getElementById("addTitleButton");
     const itemList = document.getElementById("itemList");
