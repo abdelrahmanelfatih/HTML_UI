@@ -1,103 +1,99 @@
 let items = [];
-let total = 0.00;
 
-async function addTitle() {
-    const titleInput = document.getElementById('title');
-    const title = titleInput.value.trim();
+function addItem() {
+    const itemIndex = items.length;
 
-    if (title && !items.some(item => item.name === title)) {
-        items.push({ name: title, quantity: 1, price: 0 });
-        titleInput.value = '';
-        renderItems();
-    }
-}
+    const itemHTML = `
+        <div class="item">
+            <div class="form-group">
+                <label for="title-${itemIndex}">Title</label>
+                <input type="text" id="title-${itemIndex}" placeholder="Item title">
+            </div>
+            <div class="form-group">
+                <label for="quantity-${itemIndex}">Quantity</label>
+                <input type="number" id="quantity-${itemIndex}" placeholder="Quantity" value="1" min="1" onchange="calculateTotal()">
+            </div>
+            <div class="form-group">
+                <label for="price-${itemIndex}">Price</label>
+                <input type="number" id="price-${itemIndex}" placeholder="Price" value="0" min="0" step="0.01" onchange="calculateTotal()">
+            </div>
+        </div>
+    `;
 
-function handleItemDetailChange(index, field, value) {
-    items[index][field] = field === 'price' ? parseFloat(value) : parseInt(value);
+    document.getElementById('items-container').insertAdjacentHTML('beforeend', itemHTML);
+
+    items.push({ title: '', quantity: 1, price: 0 });
     calculateTotal();
-    renderItems();
 }
 
 function calculateTotal() {
-    total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-    document.getElementById('total').textContent = `Total: ${total.toFixed(2)}`;
-}
-
-function renderItems() {
-    const itemList = document.getElementById('item-list');
-    itemList.innerHTML = '';
+    let total = 0;
 
     items.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${item.name}</span>
-            <input type="number" min="0" value="${item.quantity}" oninput="handleItemDetailChange(${index}, 'quantity', this.value)">
-            <input type="number" step="0.01" min="0" value="${item.price}" oninput="handleItemDetailChange(${index}, 'price', this.value)">
-            <span>${(item.quantity * item.price).toFixed(2)}</span>
-        `;
-        itemList.appendChild(li);
+        const quantity = parseFloat(document.getElementById(`quantity-${index}`).value) || 0;
+        const price = parseFloat(document.getElementById(`price-${index}`).value) || 0;
+
+        item.quantity = quantity;
+        item.price = price;
+
+        total += quantity * price;
     });
+
+    document.getElementById('total').textContent = total.toFixed(2);
 }
 
-// Function to send invoice data to the backend
-async function sendInvoiceData(invoiceData) {
-    try {
-        const response = await fetch('https://66c9-2001-16a2-6f02-ed00-79a0-bbc6-4627-306e.ngrok-free.app', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(invoiceData),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        console.log('Server response:', result);
-        alert('Invoice successfully sent to Telegram!');
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        alert('Failed to send invoice. Please check the console for details.');
-    }
+function displayError(message) {
+    const errorMessageElement = document.getElementById('error-message');
+    errorMessageElement.textContent = message;
 }
 
-document.getElementById('invoice-form').onsubmit = function (e) {
-    e.preventDefault();
-    const title = document.getElementById('title').value;
-    const description = document.getElementById('description').value;
-    const currency = document.getElementById('currency').value;
-    const settings = {
-        requireName: document.getElementById('require-name').checked,
-        requireEmail: document.getElementById('require-email').checked,
-        requirePhone: document.getElementById('require-phone').checked,
-        protectContent: document.getElementById('protect-content').checked,
+function createInvoice() {
+    // Clear previous error messages
+    displayError('');
+
+    items = items.map((item, index) => ({
+        title: document.getElementById(`title-${index}`).value,
+        quantity: parseFloat(document.getElementById(`quantity-${index}`).value) || 0,
+        price: parseFloat(document.getElementById(`price-${index}`).value) || 0
+    }));
+
+    const data = {
+        items: items,
+        total: items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2),
+        currency: document.getElementById('currency').value,
+        requireName: document.getElementById('requireName').checked,
+        requireEmail: document.getElementById('requireEmail').checked,
+        requirePhone: document.getElementById('requirePhone').checked,
+        protectContent: document.getElementById('protectContent').checked,
+        chatId: Telegram.WebApp.initDataUnsafe.user.id  // Adding chat ID to the data
     };
-    const image = document.getElementById('file-upload').files[0];
-    
-    // Convert image to base64 if needed
-    const imagePromise = new Promise((resolve, reject) => {
-        if (image) {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(image);
+
+    fetch('https://c98e-2001-16a2-71a5-8900-81cb-9237-4471-6dcf.ngrok-free.app/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail || 'Unknown error occurred');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(`Invoice created successfully. Total: $${data.total}`);
+    })
+    .catch((error) => {
+        // Check error message for specific known issues and display appropriate messages
+        if (error.message.includes("non-empty title")) {
+            displayError("Error: Item titles cannot be empty. Please provide a title for each item.");
+        } else if (error.message.includes("total amount does not match")) {
+            displayError("Error: The total amount does not match the sum of item prices. Please check the prices and quantities.");
         } else {
-            resolve(null);
+            displayError(`Error: ${error.message}`);
         }
     });
-
-    imagePromise.then(imageData => {
-        const invoiceData = {
-            title,
-            description,
-            currency,
-            items,
-            total,
-            settings,
-            image: imageData,
-        };
-        sendInvoiceData(invoiceData);
-    });
-};
+}
