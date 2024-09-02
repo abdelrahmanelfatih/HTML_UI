@@ -13,11 +13,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let items = [];
     let total = 0.00;
 
-    // Get the Telegram chat ID from the WebApp environment
-    const chatId = window.Telegram.WebApp.initDataUnsafe?.user?.id || null;
+    // Debugging: Check if elements are correctly selected
+    console.log({ titleInput, addTitleButton, itemList, totalAmount, currencySelect, createInvoiceButton, successMessage, titleError, descriptionError, cancelButton });
 
     // Add title functionality
     addTitleButton.addEventListener("click", function () {
+        console.log('Add Title Button Clicked'); // Debugging
         const title = titleInput.value.trim();
         if (!title) {
             titleError.style.display = "block";
@@ -52,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle input changes for quantity and price
     itemList.addEventListener("input", function (event) {
+        console.log('Item List Input Event'); // Debugging
         const index = event.target.getAttribute("data-index");
         const field = event.target.classList.contains("item-quantity") ? "quantity" : "price";
         const value = field === "quantity" ? parseInt(event.target.value) : parseFloat(event.target.value);
@@ -61,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle create invoice button
     createInvoiceButton.addEventListener("click", function () {
+        console.log('Create Invoice Button Clicked'); // Debugging
         if (!chatId) {
             alert('Chat ID is missing. Please make sure the Telegram WebApp environment is correctly initialized.');
             return;
@@ -102,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle cancel button
     cancelButton.addEventListener("click", function () {
+        console.log('Cancel Button Clicked'); // Debugging
         if (confirm("Are you sure you want to cancel?")) {
             titleInput.value = "";
             items = [];
