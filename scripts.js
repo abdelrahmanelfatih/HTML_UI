@@ -1,99 +1,102 @@
-let items = [];
+document.addEventListener("DOMContentLoaded", function () {
+    const titleInput = document.getElementById("title");
+    const addTitleButton = document.getElementById("addTitleButton");
+    const itemList = document.getElementById("itemList");
+    const totalAmount = document.getElementById("totalAmount");
+    const currencySelect = document.getElementById("currency");
+    const createInvoiceButton = document.getElementById("createInvoiceButton");
+    const successMessage = document.getElementById("successMessage");
+    const titleError = document.getElementById("titleError");
+    const descriptionError = document.getElementById("descriptionError");
+    const cancelButton = document.getElementById("cancelButton");
 
-function addItem() {
-    const itemIndex = items.length;
+    let items = [];
+    let total = 0.00;
 
-    const itemHTML = `
-        <div class="item">
-            <div class="form-group">
-                <label for="title-${itemIndex}">Title</label>
-                <input type="text" id="title-${itemIndex}" placeholder="Item title">
-            </div>
-            <div class="form-group">
-                <label for="quantity-${itemIndex}">Quantity</label>
-                <input type="number" id="quantity-${itemIndex}" placeholder="Quantity" value="1" min="1" onchange="calculateTotal()">
-            </div>
-            <div class="form-group">
-                <label for="price-${itemIndex}">Price</label>
-                <input type="number" id="price-${itemIndex}" placeholder="Price" value="0" min="0" step="0.01" onchange="calculateTotal()">
-            </div>
-        </div>
-    `;
-
-    document.getElementById('items-container').insertAdjacentHTML('beforeend', itemHTML);
-
-    items.push({ title: '', quantity: 1, price: 0 });
-    calculateTotal();
-}
-
-function calculateTotal() {
-    let total = 0;
-
-    items.forEach((item, index) => {
-        const quantity = parseFloat(document.getElementById(`quantity-${index}`).value) || 0;
-        const price = parseFloat(document.getElementById(`price-${index}`).value) || 0;
-
-        item.quantity = quantity;
-        item.price = price;
-
-        total += quantity * price;
+    // Add title functionality
+    addTitleButton.addEventListener("click", function () {
+        const title = titleInput.value.trim();
+        if (!title) {
+            titleError.style.display = "block";
+            return;
+        }
+        titleError.style.display = "none";
+        items.push({ name: title, quantity: 1, price: 0 });
+        renderItems();
+        titleInput.value = "";
     });
 
-    document.getElementById('total').textContent = total.toFixed(2);
-}
+    // Render items and calculate total
+    function renderItems() {
+        itemList.innerHTML = "";
+        total = 0;
 
-function displayError(message) {
-    const errorMessageElement = document.getElementById('error-message');
-    errorMessageElement.textContent = message;
-}
+        items.forEach((item, index) => {
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                <span>${item.name}</span>
+                <input type="number" min="0" value="${item.quantity}" data-index="${index}" class="item-quantity">
+                <input type="number" min="0" step="0.01" value="${item.price}" data-index="${index}" class="item-price">
+                <span>${(item.quantity * item.price).toFixed(2)}</span>
+            `;
+            itemList.appendChild(listItem);
 
-function createInvoice() {
-    // Clear previous error messages
-    displayError('');
+            total += item.quantity * item.price;
+        });
 
-    items = items.map((item, index) => ({
-        title: document.getElementById(`title-${index}`).value,
-        quantity: parseFloat(document.getElementById(`quantity-${index}`).value) || 0,
-        price: parseFloat(document.getElementById(`price-${index}`).value) || 0
-    }));
+        totalAmount.textContent = total.toFixed(2);
+    }
 
-    const data = {
-        items: items,
-        total: items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2),
-        currency: document.getElementById('currency').value,
-        requireName: document.getElementById('requireName').checked,
-        requireEmail: document.getElementById('requireEmail').checked,
-        requirePhone: document.getElementById('requirePhone').checked,
-        protectContent: document.getElementById('protectContent').checked,
-        chatId: Telegram.WebApp.initDataUnsafe.user.id  // Adding chat ID to the data
-    };
+    // Handle input changes for quantity and price
+    itemList.addEventListener("input", function (event) {
+        const index = event.target.getAttribute("data-index");
+        const field = event.target.classList.contains("item-quantity") ? "quantity" : "price";
+        const value = field === "quantity" ? parseInt(event.target.value) : parseFloat(event.target.value);
+        items[index][field] = value || 0;
+        renderItems();
+    });
 
-    fetch('https://c98e-2001-16a2-71a5-8900-81cb-9237-4471-6dcf.ngrok-free.app/send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.detail || 'Unknown error occurred');
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        alert(`Invoice created successfully. Total: $${data.total}`);
-    })
-    .catch((error) => {
-        // Check error message for specific known issues and display appropriate messages
-        if (error.message.includes("non-empty title")) {
-            displayError("Error: Item titles cannot be empty. Please provide a title for each item.");
-        } else if (error.message.includes("total amount does not match")) {
-            displayError("Error: The total amount does not match the sum of item prices. Please check the prices and quantities.");
-        } else {
-            displayError(`Error: ${error.message}`);
+    // Handle create invoice button
+    createInvoiceButton.addEventListener("click", function () {
+        const invoiceData = {
+            items: items,
+            total: total.toFixed(2),
+            currency: currencySelect.value,
+            settings: {
+                requireName: document.getElementById("requireName").checked,
+                requireEmail: document.getElementById("requireEmail").checked,
+                requirePhone: document.getElementById("requirePhoneNumber").checked,
+                protectContent: document.getElementById("protectContent").checked
+            }
+        };
+
+        fetch('https://your-backend-api-url.com/invoices', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(invoiceData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            successMessage.classList.remove("hidden");
+            setTimeout(() => {
+                successMessage.classList.add("hidden");
+            }, 3000);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Failed to create invoice. Please try again.');
+        });
+    });
+
+    // Handle cancel button
+    cancelButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to cancel?")) {
+            titleInput.value = "";
+            items = [];
+            renderItems();
         }
     });
-}
+});
