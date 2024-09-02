@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let items = [];
     let total = 0.00;
 
+    // Get the Telegram chat ID from the WebApp environment
+    const chatId = window.Telegram.WebApp.initDataUnsafe?.user?.id || null;
+
     // Add title functionality
     addTitleButton.addEventListener("click", function () {
         const title = titleInput.value.trim();
@@ -58,6 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle create invoice button
     createInvoiceButton.addEventListener("click", function () {
+        if (!chatId) {
+            alert('Chat ID is missing. Please make sure the Telegram WebApp environment is correctly initialized.');
+            return;
+        }
+
         const invoiceData = {
             items: items,
             total: total.toFixed(2),
@@ -67,7 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 requireEmail: document.getElementById("requireEmail").checked,
                 requirePhone: document.getElementById("requirePhoneNumber").checked,
                 protectContent: document.getElementById("protectContent").checked
-            }
+            },
+            chatId: chatId // Include chat ID in the payload
         };
 
         fetch('https://3fb0-2001-16a2-71a5-8900-153c-dad7-eae8-b0ec.ngrok-free.app/send', {
