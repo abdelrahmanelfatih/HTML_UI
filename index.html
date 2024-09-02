@@ -2,260 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Invoice</title>
+    <title>Invoice Creator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h2>Create Invoice</h2>
-        <div id="error-message" class="error-message"></div>
-        <div id="items-container"></div>
-        <button class="add-item-btn" onclick="addItem()">Add Item</button>
+        <div class="header">
+            <button id="cancelButton">Cancel</button>
+            <h1>Mr Crab <span>bot</span></h1>
+            <img src="C:/Users/nar7g/Downloads/f58b2313083dc2b197da94070885c5a3.jpg" alt="Mr. Crabs with money" class="mr-crabs-icon">
+        </div>
+
         <div class="form-group">
-            <label for="currency">Currency</label>
+            <label for="title">Title</label>
+            <input type="text" id="title" placeholder="Item title">
+            <button id="addTitleButton">Add Title</button>
+            <small class="error" id="titleError">Title can't be empty</small>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" placeholder="Product description, 1-255 characters">
+            <small class="error" id="descriptionError">Description is required</small>
+        </div>
+
+        <ul id="itemList" class="item-list">
+            <!-- Items will be dynamically added here -->
+        </ul>
+
+        <div class="total-currency-group">
+            <div class="total">Total: <span id="totalAmount">0.00</span></div>
             <select id="currency">
                 <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
+                <option value="EUR">EURO</option>
                 <option value="GBP">GBP</option>
+                <option value="MYR">MYR</option>
+                <option value="CNY">Renminbi</option>
             </select>
         </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requireName">
-            <label for="requireName">Require name</label>
+
+        <div class="invoice-settings">
+            <div>
+                <label>Require name</label>
+                <input type="checkbox" id="requireName">
+            </div>
+            <div>
+                <label>Require email</label>
+                <input type="checkbox" id="requireEmail">
+            </div>
+            <div>
+                <label>Require phone number</label>
+                <input type="checkbox" id="requirePhoneNumber">
+            </div>
+            <div>
+                <label>Protect content</label>
+                <input type="checkbox" id="protectContent">
+            </div>
         </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requireEmail">
-            <label for="requireEmail">Require email</label>
+
+        <button id="createInvoiceButton" class="create-invoice-button">Create Invoice</button>
+
+        <!-- Success animation and message, hidden by default -->
+        <div id="successMessage" class="success-message hidden">
+            <img src="C:/Users/nar7g/Downloads/green-check-mark-icon-circle-tick-symbol-color-vector-illustration-145388687.webp" alt="Success" class="success-icon">
+            <p>Invoice created successfully!</p>
         </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requirePhone">
-            <label for="requirePhone">Require phone number</label>
-        </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="protectContent">
-            <label for="protectContent">Protect content</label>
-        </div>
-        <div class="total">Total: $<span id="total">0</span></div>
-        <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="scripts.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Invoice</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-        .container h2 {
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        .form-group input[type="checkbox"] {
-            width: auto;
-            margin-right: 10px;
-        }
-        .form-group .checkbox-group {
-            display: flex;
-            align-items: center;
-        }
-        .form-group .checkbox-group label {
-            margin: 0;
-        }
-        .form-group .checkbox-group input {
-            margin-right: 5px;
-        }
-        .add-item-btn, .create-invoice-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-        .add-item-btn:hover, .create-invoice-btn:hover {
-            background-color: #0056b3;
-        }
-        .item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .total {
-            font-weight: bold;
-            text-align: right;
-        }
-        .error-message {
-            color: red;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Create Invoice</h2>
-        <div id="error-message" class="error-message"></div>
-        <div id="items-container"></div>
-        <button class="add-item-btn" onclick="addItem()">Add Item</button>
-        <div class="form-group">
-            <label for="currency">Currency</label>
-            <select id="currency">
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-            </select>
-        </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requireName">
-            <label for="requireName">Require name</label>
-        </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requireEmail">
-            <label for="requireEmail">Require email</label>
-        </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="requirePhone">
-            <label for="requirePhone">Require phone number</label>
-        </div>
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="protectContent">
-            <label for="protectContent">Protect content</label>
-        </div>
-        <div class="total">Total: $<span id="total">0</span></div>
-        <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
-    </div>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        let items = [];
-        
-        function addItem() {
-            const itemIndex = items.length;
-
-            const itemHTML = `
-                <div class="item">
-                    <div class="form-group">
-                        <label for="title-${itemIndex}">Title</label>
-                        <input type="text" id="title-${itemIndex}" placeholder="Item title">
-                    </div>
-                    <div class="form-group">
-                        <label for="quantity-${itemIndex}">Quantity</label>
-                        <input type="number" id="quantity-${itemIndex}" placeholder="Quantity" value="1" min="1" onchange="calculateTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label for="price-${itemIndex}">Price</label>
-                        <input type="number" id="price-${itemIndex}" placeholder="Price" value="0" min="0" step="0.01" onchange="calculateTotal()">
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('items-container').insertAdjacentHTML('beforeend', itemHTML);
-
-            items.push({ title: '', quantity: 1, price: 0 });
-            calculateTotal();
-        }
-
-        function calculateTotal() {
-            let total = 0;
-
-            items.forEach((item, index) => {
-                const quantity = parseFloat(document.getElementById(`quantity-${index}`).value) || 0;
-                const price = parseFloat(document.getElementById(`price-${index}`).value) || 0;
-
-                item.quantity = quantity;
-                item.price = price;
-
-                total += quantity * price;
-            });
-
-            document.getElementById('total').textContent = total.toFixed(2);
-        }
-
-        function displayError(message) {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = message;
-        }
-
-        function createInvoice() {
-            // Clear previous error messages
-            displayError('');
-
-            items = items.map((item, index) => ({
-                title: document.getElementById(`title-${index}`).value,
-                quantity: parseFloat(document.getElementById(`quantity-${index}`).value) || 0,
-                price: parseFloat(document.getElementById(`price-${index}`).value) || 0
-            }));
-
-            const data = {
-                items: items,
-                total: items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2),
-                currency: document.getElementById('currency').value,
-                requireName: document.getElementById('requireName').checked,
-                requireEmail: document.getElementById('requireEmail').checked,
-                requirePhone: document.getElementById('requirePhone').checked,
-                protectContent: document.getElementById('protectContent').checked,
-                chatId: Telegram.WebApp.initDataUnsafe.user.id  // Adding chat ID to the data
-            };
-
-            fetch('https://c98e-2001-16a2-71a5-8900-81cb-9237-4471-6dcf.ngrok-free.app/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.detail || 'Unknown error occurred');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert(`Invoice created successfully. Total: $${data.total}`);
-            })
-            .catch((error) => {
-                // Check error message for specific known issues and display appropriate messages
-                if (error.message.includes("non-empty title")) {
-                    displayError("Error: Item titles cannot be empty. Please provide a title for each item.");
-                } else if (error.message.includes("total amount does not match")) {
-                    displayError("Error: The total amount does not match the sum of item prices. Please check the prices and quantities.");
-                } else {
-                    displayError(`Error: ${error.message}`);
-                }
-            });
-        }
-    </script>
 </body>
 </html>
