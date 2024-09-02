@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         titleError.style.display = "none";
-        items.push({ name: title, quantity: 1, price: 0 });
+        items.push({ title: title, quantity: 1, price: 0 }); // Use 'title' instead of 'name'
         renderItems();
         titleInput.value = "";
     });
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         items.forEach((item, index) => {
             const listItem = document.createElement("li");
             listItem.innerHTML = `
-                <span>${item.name}</span>
+                <span>${item.title}</span> <!-- Use 'title' instead of 'name' -->
                 <input type="number" min="0" value="${item.quantity}" data-index="${index}" class="item-quantity">
                 <input type="number" min="0" step="0.01" value="${item.price}" data-index="${index}" class="item-price">
                 <span>${(item.quantity * item.price).toFixed(2)}</span>
@@ -74,7 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const invoiceData = {
-            items: items,
+            items: items.map(item => ({
+                title: item.title, // Ensure 'title' is included in the payload
+                quantity: item.quantity,
+                price: item.price
+            })),
             total: total.toFixed(2),
             currency: currencySelect.value,
             settings: {
