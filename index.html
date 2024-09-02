@@ -4,6 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Invoice</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Create Invoice</h2>
+        <div id="error-message" class="error-message"></div>
+        <div id="items-container"></div>
+        <button class="add-item-btn" onclick="addItem()">Add Item</button>
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <select id="currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requireName">
+            <label for="requireName">Require name</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requireEmail">
+            <label for="requireEmail">Require email</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="requirePhone">
+            <label for="requirePhone">Require phone number</label>
+        </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="protectContent">
+            <label for="protectContent">Protect content</label>
+        </div>
+        <div class="total">Total: $<span id="total">0</span></div>
+        <button class="create-invoice-btn" onclick="createInvoice()">Create Invoice</button>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice</title>
     <style>
         body {
             font-family: Arial, sans-serif;
