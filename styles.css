@@ -1,0 +1,368 @@
+/* styles.css */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e0f7fa;
+  margin: 0;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+/* Adjust the header to ensure proper spacing for the cancel button */
+.header {
+  text-align: center;
+  position: relative;
+  padding: 20px 0; /* Increase padding for space */
+}
+
+.header h1 {
+  font-size: 20px;
+  margin: 0;
+  color: #000;
+}
+
+.bot-label {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Ensure the cancel button is properly positioned and visible */
+.cancel-btn {
+  position: absolute;
+  top: 10px; /* Adjust top position */
+  right: 10px; /* Adjust right position */
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10; /* Ensure it's on top */
+}
+
+.cancel-btn:hover {
+  text-decoration: underline;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#title {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: calc(100% - 16px); /* Adjust width to fit the container */
+}
+
+.description-area {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Add spacing between elements */
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+#description {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  height: 120px; /* Increased height for more space */
+}
+
+.small-attach-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.attach-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px; /* Square preview */
+}
+
+#currency {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 10px; /* Add spacing from description box */
+}
+
+.box {
+  background-color: #f8f9fa; /* Match background color */
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #ccc;
+}
+
+.quantity {
+  flex: 1;
+}
+
+.quantity-number {
+  border: 1px dashed transparent;
+  color: #333;
+  position: relative;
+  font-style: italic;
+  padding: 0 5px; /* Padding for spacing */
+}
+
+.quantity-number::before {
+  content: '1'; /* Default value for quantity */
+  color: #999; /* Faded color for placeholder text */
+  font-style: italic;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* Ensure placeholder text does not interfere with editing */
+  opacity: 0.5; /* Faded opacity for placeholder */
+  padding: 0 5px; /* Padding for spacing */
+}
+
+.quantity-number[contenteditable="true"]:empty::before {
+  content: '1'; /* Placeholder value for empty quantity */
+}
+
+.title,
+.price {
+  flex: 2;
+  text-align: center;
+  cursor: text;
+  border: 1px dashed transparent;
+  color: #333;
+  position: relative;
+  padding: 0 5px; /* Padding for spacing */
+}
+
+.title::before,
+.price::before {
+  content: attr(data-placeholder);
+  color: #999; /* Faded color for placeholder text */
+  font-style: italic;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the placeholder text */
+  pointer-events: none; /* Ensure placeholder text does not interfere with editing */
+  opacity: 0.5; /* Faded opacity for placeholder */
+  padding: 0 5px; /* Padding for spacing */
+}
+
+.title[contenteditable="true"]:empty::before,
+.price[contenteditable="true"]:empty::before {
+  content: attr(data-placeholder);
+}
+
+.title:not(:empty)::before,
+.price:not(:empty)::before {
+  content: '';
+}
+
+.delete-button {
+  margin-left: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  color: red;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.delete-button:hover {
+  color: darkred;
+}
+
+.add-button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: blue;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  margin-top: 20px;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
+}
+
+.total {
+  text-align: right;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.create-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.create-btn:hover {
+  background-color: #0056b3;
+}
+
+.invoice-settings {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.invoice-settings h2 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.setting-item label {
+  font-size: 14px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #007bff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+/* Existing styles remain unchanged */
+
+.file-preview {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.file-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+/* Make container fit mobile screen */
+.container {
+  width: 100%;
+  max-width: 400px; /* Increase max-width if needed */
+  margin: 0 auto;
+  padding: 20px; /* Increase padding if needed */
+}
+
+/* Add responsiveness */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .create-btn {
+    font-size: 14px;
+  }
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
