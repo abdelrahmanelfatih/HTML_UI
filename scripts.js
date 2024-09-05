@@ -1,122 +1,153 @@
-document.addEventListener("DOMContentLoaded", function () {
-    if (!window.Telegram || !window.Telegram.WebApp) {
-        console.error('Telegram WebApp SDK is not loaded.');
-        return;
-    }
+document.addEventListener('DOMContentLoaded', function() {
+  const addButton = document.querySelector('.add-button');
+  const box = document.querySelector('.box');
+  const titleInput = document.getElementById('title');
+  const descriptionInput = document.getElementById('description');
+  const currencySelect = document.getElementById('currency');
+  const totalSpan = document.getElementById('total');
+  const fileInput = document.getElementById('fileAttachment');
+  const filePreview = document.getElementById('filePreview');
 
-    window.Telegram.WebApp.ready(); // Ensure SDK is ready
+  const handleFormSubmit = async () => {
+      let isValid = true;
 
-    const titleInput = document.getElementById("title");
-    const addTitleButton = document.getElementById("addTitleButton");
-    const itemList = document.getElementById("itemList");
-    const totalAmount = document.getElementById("totalAmount");
-    const currencySelect = document.getElementById("currency");
-    const createInvoiceButton = document.getElementById("createInvoiceButton");
-    const successMessage = document.getElementById("successMessage");
-    const titleError = document.getElementById("titleError");
-    const descriptionError = document.getElementById("descriptionError");
-    const cancelButton = document.getElementById("cancelButton");
+      // Clear previous error messages
+      document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
 
-    let items = [];
-    let total = 0.00;
+      // Validate title
+      if (titleInput.value.trim() === '') {
+          document.getElementById('title-error').textContent = 'Title cannot be empty';
+          isValid = false;
+      }
 
-    // Get the Telegram chat ID from the WebApp environment
-    const chatId = window.Telegram.WebApp.initDataUnsafe?.user?.id || null;
+      // Validate items
+      const items = Array.from(box.querySelectorAll('.item')).map(item => {
+          const quantityElem = item.querySelector('.quantity-number');
+          const quantity = quantityElem.textContent.trim();
+          const title = item.querySelector('.title').textContent.trim();
+          const price = item.querySelector('.price').textContent.trim();
 
-    // Add title functionality
-    addTitleButton.addEventListener("click", function () {
-        const title = titleInput.value.trim();
-        if (!title) {
-            titleError.style.display = "block";
-            return;
-        }
-        titleError.style.display = "none";
-        items.push({ title: title, quantity: 1, price: 0 }); // Use 'title' instead of 'name'
-        renderItems();
-        titleInput.value = "";
-    });
+          let itemValid = true;
 
-    // Render items and calculate total
-    function renderItems() {
-        itemList.innerHTML = "";
-        total = 0;
+          if (quantity === '' || isNaN(quantity) || Number(quantity) <= 0) {
+              item.querySelector('.quantity-error').textContent = 'Quantity must be a positive number';
+              itemValid = false;
+              isValid = false;
+          }
 
-        items.forEach((item, index) => {
-            const listItem = document.createElement("li");
-            listItem.innerHTML = `
-                <span>${item.title}</span> <!-- Use 'title' instead of 'name' -->
-                <input type="number" min="0" value="${item.quantity}" data-index="${index}" class="item-quantity">
-                <input type="number" min="0" step="0.01" value="${item.price}" data-index="${index}" class="item-price">
-                <span>${(item.quantity * item.price).toFixed(2)}</span>
-            `;
-            itemList.appendChild(listItem);
+          if (title === '') {
+              item.querySelector('.title-error').textContent = 'Item title cannot be empty';
+              itemValid = false;
+              isValid = false;
+          }
 
-            total += item.quantity * item.price;
-        });
+          if (price === '' || isNaN(price)) {
+              item.querySelector('.price-error').textContent = 'Price must be a valid number';
+              itemValid = false;
+              isValid = false;
+          }
 
-        totalAmount.textContent = total.toFixed(2);
-    }
+          if (itemValid) {
+              return { quantity, title, price };
+          }
 
-    // Handle input changes for quantity and price
-    itemList.addEventListener("input", function (event) {
-        const index = event.target.getAttribute("data-index");
-        const field = event.target.classList.contains("item-quantity") ? "quantity" : "price";
-        const value = field === "quantity" ? parseInt(event.target.value) : parseFloat(event.target.value);
-        items[index][field] = value || 0;
-        renderItems();
-    });
+          return null;
+      }).filter(item => item !== null);
 
-    // Handle create invoice button
-    createInvoiceButton.addEventListener("click", function () {
-        if (!chatId) {
-            alert('Chat ID is missing. Please make sure the Telegram WebApp environment is correctly initialized.');
-            return;
-        }
+      if (items.length === 0) {
+          document.querySelectorAll('.item').forEach(item => {
+              if (!item.querySelector('.quantity-error').textContent &&
+                  !item.querySelector('.title-error').textContent &&
+                  !item.querySelector('.price-error').textContent) {
+                  item.querySelector('.quantity-error').textContent = 'At least one valid item is required';
+              }
+          });
+          isValid = false;
+      }
 
-        const invoiceData = {
-            items: items.map(item => ({
-                title: item.title, // Ensure 'title' is included in the payload
-                quantity: item.quantity,
-                price: item.price
-            })),
-            total: total.toFixed(2),
-            currency: currencySelect.value,
-            settings: {
-                requireName: document.getElementById("requireName").checked,
-                requireEmail: document.getElementById("requireEmail").checked,
-                requirePhone: document.getElementById("requirePhoneNumber").checked,
-                protectContent: document.getElementById("protectContent").checked
-            },
-            chatId: chatId // Include chat ID in the payload
-        };
+      if (!isValid) return;
 
-        fetch('https://3fb0-2001-16a2-71a5-8900-153c-dad7-eae8-b0ec.ngrok-free.app/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(invoiceData),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            successMessage.classList.remove("hidden");
-            setTimeout(() => {
-                successMessage.classList.add("hidden");
-            }, 3000);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Failed to create invoice. Please try again.');
-        });
-    });
+      // Collect data
+      const invoiceData = {
+          title: titleInput.value,
+          description: descriptionInput.value,
+          currency: currencySelect.value,
+          items: items,
+          total: totalSpan.textContent,
+          userId: 'yourUserId' // Replace 'yourUserId' with actual user ID
+      };
 
-    // Handle cancel button
-    cancelButton.addEventListener("click", function () {
-        if (confirm("Are you sure you want to cancel?")) {
-            titleInput.value = "";
-            items = [];
-            renderItems();
-        }
-    });
+      // Send data with fetch
+      try {
+          const response = await fetch('https://your-backend-endpoint.com/api/invoices', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(invoiceData),
+          });
+
+          if (response.ok) {
+              console.log('Invoice successfully created');
+              // Handle successful response here
+          } else {
+              console.error('Failed to create invoice');
+              // Handle error response here
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  };
+
+  document.querySelector('.create-btn').addEventListener('click', handleFormSubmit);
+
+  addButton.addEventListener('click', function() {
+      const itemBox = document.createElement('div');
+      itemBox.className = 'item';
+
+      itemBox.innerHTML = `
+          <span class="quantity">
+              <span class="quantity-number" contenteditable="true">1</span>x
+          </span>
+          <span class="title" contenteditable="true" data-placeholder="Title"></span>
+          <span class="price" contenteditable="true" data-placeholder="1.00"></span>
+          <button class="delete-button">x</button>
+          <div class="error-message quantity-error"></div>
+          <div class="error-message title-error"></div>
+          <div class="error-message price-error"></div>
+      `;
+
+      // Insert the new item above the add button
+      box.insertBefore(itemBox, addButton);
+  });
+
+  box.addEventListener('click', function(event) {
+      if (event.target.classList.contains('delete-button') && box.querySelectorAll('.item').length > 1) {
+          event.target.parentElement.remove();
+      }
+  });
 });
+
+function handleFileAttachment() {
+  document.getElementById('fileAttachment').click();
+}
+
+function handleFilePreview(event) {
+  const file = event.target.files[0];
+  if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          const preview = document.getElementById('filePreview');
+          preview.innerHTML = ''; // Clear previous preview
+          preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+  }
+}
+
+function handleCancel() {
+  console.log('Cancel button clicked. Closing the tab.');
+  window.close();
+}
