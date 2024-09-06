@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,12 +7,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg-color: #f0f2f5;
-            --tg-theme-text-color: #2c3e50;
-            --tg-theme-hint-color: #7f8c8d;
-            --tg-theme-link-color: #3498db;
-            --tg-theme-button-color: #2980b9;
-            --tg-theme-button-text-color: #ecf0f1;
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #333333;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #0088cc;
+            --tg-theme-button-color: #0088cc;
+            --tg-theme-button-text-color: #ffffff;
         }
 
         body {
@@ -28,7 +27,7 @@
             min-height: 100vh;
         }
         .container {
-            background: #ffffff;
+            background: #f9f9f9;
             width: 100%;
             max-width: 414px;
             height: 100vh;
@@ -38,11 +37,12 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .header {
             text-align: center;
             position: relative;
-            padding: 10px 0;
+            padding: 15px 0;
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
             border-radius: 8px;
@@ -74,13 +74,18 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: var(--tg-theme-text-color);
         }
         #title, #description, #currency {
-            padding: 8px;
-            border: 1px solid var(--tg-theme-hint-color);
+            padding: 10px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
-            background-color: var(--tg-theme-bg-color);
+            background-color: #ffffff;
             color: var(--tg-theme-text-color);
         }
         .description-area {
@@ -110,21 +115,21 @@
         }
         .box {
             background-color: #ffffff;
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            border: 1px solid var(--tg-theme-hint-color);
+            gap: 10px;
+            border: 1px solid #e0e0e0;
         }
         .item {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px;
+            padding: 10px;
             border-radius: 8px;
-            background: #f9f9f9;
-            border: 1px solid var(--tg-theme-hint-color);
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
         }
         .quantity, .title, .price {
             flex: 1;
@@ -133,11 +138,11 @@
             border: 1px dashed transparent;
             color: var(--tg-theme-text-color);
             position: relative;
-            padding: 0 5px;
+            padding: 5px;
         }
         .quantity-number, .title, .price {
             font-style: italic;
-            padding: 0 5px;
+            padding: 5px;
         }
         .quantity-number::before,
         .title::before,
@@ -182,7 +187,7 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             margin-top: 10px;
             align-self: center;
         }
@@ -195,38 +200,44 @@
             font-weight: bold;
             margin-top: 20px;
             color: var(--tg-theme-text-color);
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
         }
         .create-btn {
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 8px;
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             cursor: pointer;
             width: 100%;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
         .create-btn:hover {
-            opacity: 0.8;
+            background-color: #0077b3;
         }
         .invoice-settings {
             background-color: #ffffff;
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color);
+            border: 1px solid #e0e0e0;
         }
         .invoice-settings h2 {
-            font-size: 16px;
-            margin: 0 0 10px;
+            font-size: 18px;
+            margin: 0 0 15px;
             color: var(--tg-theme-text-color);
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
         }
         .setting-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .setting-item label {
             font-size: 14px;
@@ -235,8 +246,8 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 34px;
-            height: 20px;
+            width: 40px;
+            height: 24px;
         }
         .switch input {
             opacity: 0;
@@ -250,45 +261,49 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--tg-theme-hint-color);
+            background-color: #ccc;
             transition: .4s;
-            border-radius: 20px;
+            border-radius: 24px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 12px;
-            width: 12px;
+            height: 18px;
+            width: 18px;
             border-radius: 50%;
-            left: 4px;
-            bottom: 4px;
-            background-color: var(--tg-theme-bg-color);
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
             transition: .4s;
         }
         input:checked + .slider {
             background-color: var(--tg-theme-button-color);
         }
         input:checked + .slider:before {
-            transform: translateX(14px);
+            transform: translateX(16px);
         }
         .file-preview {
             width: 40px;
             height: 40px;
-            border: 1px solid var(--tg-theme-hint-color);
-            background-color: var(--tg-theme-bg-color);
+            border: 1px solid #e0e0e0;
+            background-color: #ffffff;
             border-radius: 4px;
             display: inline-block;
             margin-left: 8px;
+            overflow: hidden;
         }
         .file-preview img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
         .error-message {
             color: #e74c3c;
             font-size: 12px;
             margin-top: 5px;
+            background-color: #fde8e8;
+            padding: 5px;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -301,13 +316,13 @@
         </div>
 
         <div class="form-group">
-            <label>Title</label>
+            <label for="title">Title</label>
             <input type="text" id="title" placeholder="Product name, 1-32 characters">
             <div id="title-error" class="error-message"></div>
         </div>
 
         <div class="form-group description-area">
-            <label>Description</label>
+            <label for="description">Description</label>
             <div class="input-group">
                 <button class="small-attach-btn" onclick="handleFileAttachment()">
                     <img src="https://cdn-icons-png.flaticon.com/512/860/860790.png" alt="Attach" class="attach-icon">
