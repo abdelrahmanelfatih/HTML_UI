@@ -9,7 +9,485 @@
 <body>
     <div class="container">
         <div class="header">
+            <h1>Mr Crab's Invoicer</h1><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Creator</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #5288c1;
+            --tg-theme-button-text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: var(--tg-theme-bg-color);
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .header {
+            text-align: center;
+            position: relative;
+            padding: 10px 0;
+        }
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+            color: var(--tg-theme-text-color);
+        }
+        .bot-label {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+        }
+        .cancel-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: var(--tg-theme-link-color);
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .cancel-btn:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        #title, #description, #currency {
+            padding: 8px;
+            border: 1px solid var(--tg-theme-hint-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+        }
+        .description-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+        }
+        #description {
+            flex: 1;
+            height: 80px;
+        }
+        .small-attach-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .attach-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+        .box {
+            background-color: var(--tg-theme-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px solid var(--tg-theme-hint-color);
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--tg-theme-bg-color);
+            border: 1px solid var(--tg-theme-hint-color);
+        }
+        .quantity, .title, .price {
+            flex: 1;
+            text-align: center;
+            cursor: text;
+            border: 1px dashed transparent;
+            color: var(--tg-theme-text-color);
+            position: relative;
+            padding: 0 5px;
+        }
+        .quantity-number, .title, .price {
+            font-style: italic;
+            padding: 0 5px;
+        }
+        .quantity-number::before,
+        .title::before,
+        .price::before {
+            content: attr(data-placeholder);
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--tg-theme-hint-color);
+            pointer-events: none;
+        }
+        .quantity-number:focus::before,
+        .title:focus::before,
+        .price:focus::before,
+        .quantity-number:not(:empty)::before,
+        .title:not(:empty)::before,
+        .price:not(:empty)::before {
+            display: none;
+        }
+        .delete-button {
+            margin-left: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #ff0000;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+        .delete-button:hover {
+            color: #cc0000;
+        }
+        .add-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+            align-self: center;
+        }
+        .add-button:hover {
+            opacity: 0.8;
+        }
+        .total {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--tg-theme-text-color);
+        }
+        .create-btn {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .create-btn:hover {
+            opacity: 0.8;
+        }
+        .invoice-settings {
+            background-color: var(--tg-theme-bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color);
+        }
+        .invoice-settings h2 {
+            font-size: 16px;
+            margin: 0 0 10px;
+            color: var(--tg-theme-text-color);
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .setting-item label {
+            font-size: 14px;
+            color: var(--tg-theme-text-color);
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--tg-theme-hint-color);
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--tg-theme-bg-color);
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: var(--tg-theme-button-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+        .file-preview {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--tg-theme-hint-color);
+            background-color: var(--tg-theme-bg-color);
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .file-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .error-message {
+            color: #ff0000;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
             <h1>Mr Crab's Invoicer</h1>
+            <p class="bot-label">bot</p>
+            <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
+        </div>
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" placeholder="Product name, 1-32 characters">
+            <div id="title-error" class="error-message"></div>
+        </div>
+
+        <div class="form-group description-area">
+            <label>Description</label>
+            <div class="input-group">
+                <button class="small-attach-btn" onclick="handleFileAttachment()">
+                    <img src="https://cdn-icons-png.flaticon.com/512/860/860790.png" alt="Attach" class="attach-icon">
+                </button>
+                <input type="text" id="description" placeholder="Product description, 1-255 characters">
+                <input type="file" id="fileAttachment" style="display: none;" onchange="handleFilePreview(event)">
+                <div id="filePreview" class="file-preview"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <select id="currency">
+                <option value="usd">USD</option>
+                <option value="eur">EUR</option>
+            </select>
+        </div>
+
+        <div class="box">
+            <div class="item">
+                <span class="quantity">
+                    <span class="quantity-number" contenteditable="true" data-placeholder="Qty" oninput="updateTotal()"></span>x
+                </span>
+                <span class="title" contenteditable="true" data-placeholder="Item name"></span>
+                <span class="price" contenteditable="true" data-placeholder="Price" oninput="validatePrice(this); updateTotal()"></span>
+                <button class="delete-button" onclick="removeItem(event)">x</button>
+            </div>
+        </div>
+
+        <button class="add-button" onclick="addItem()">+</button>
+        <div id="item-errors" class="error-message"></div>
+
+        <div class="total">Total: <span id="total-amount">0.00</span></div>
+
+        <div class="invoice-settings">
+            <h2>Invoice Settings</h2>
+            <div class="setting-item">
+                <label for="require-name">Require Name</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-name">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="require-email">Require Email</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-email">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="require-phone">Require Phone</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-phone">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="protect-content">Protect Content</label>
+                <label class="switch">
+                    <input type="checkbox" id="protect-content">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <button class="create-btn" onclick="handleFormSubmit()">Create Invoice</button>
+    </div>
+
+    <script>
+        let attachedFile = null;
+        let tg;
+
+        window.addEventListener('load', function() {
+            tg = window.Telegram.WebApp;
+            tg.ready();
+        });
+
+        function handleCancel() {
+            if (tg) {
+                tg.close();
+            } else {
+                console.error('Telegram WebApp is not initialized');
+            }
+        }
+
+        function handleFileAttachment() {
+            document.getElementById('fileAttachment').click();
+        }
+
+        function handleFilePreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                attachedFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('filePreview');
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="File Preview">';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addItem() {
+            const box = document.querySelector('.box');
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <span class="quantity">
+                    <span class="quantity-number" contenteditable="true" data-placeholder="Qty" oninput="updateTotal()"></span>x
+                </span>
+                <span class="title" contenteditable="true" data-placeholder="Item name"></span>
+                <span class="price" contenteditable="true" data-placeholder="Price" oninput="validatePrice(this); updateTotal()"></span>
+                <button class="delete-button" onclick="removeItem(event)">x</button>
+            `;
+            box.appendChild(item);
+            updateTotal();
+        }
+
+        function removeItem(event) {
+            const item = event.target.closest('.item');
+            if (document.querySelectorAll('.item').length > 1) {
+                item.remove();
+                updateTotal();
+            } else {
+                document.getElementById('item-errors').textContent = "At least one item must be present.";
+            }
+        }
+
+        function validatePrice(element) {
+            element.textContent = element.textContent.replace(/[^0-9.]/g, '');
+            if (element.textContent.split('.').length > 2) {
+                element.textContent = element.textContent.replace(/\.+$/, '');
+            }
+        }
+
+        function updateTotal() {
+            const items = document.querySelectorAll('.item');
+            let total = 0;
+            items.forEach(item => {
+                const quantity = parseFloat(item.querySelector('.quantity-number').textContent) || 0;
+                const price = parseFloat(item.querySelector('.price').textContent) || 0;
+                total += quantity * price;
+            });
+            let isValid = true;
+
+            if (!title) {
+                document.getElementById('title-error').textContent = "Title cannot be empty";
+                isValid = false;
+            } else {
+                document.getElementById('title-error').textContent = "";
+            }
+
+            items.forEach(item => {
+                const quantity = item.querySelector('.quantity-number').textContent.trim();
+                const title = item.querySelector('.title').textContent.trim();
+                const price = item.querySelector('.price').textContent.trim();
+
+                if (!title || !quantity || !price || isNaN(price)) {
+                    document.getElementById('item-errors').textContent = "Item fields cannot be empty and price must be valid.";
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                // Handle the data submission
+                console.log("Form Submitted");
+            }
+        }
+    </script>
+</body>
+</html>
+
             <p class="bot-label">bot</p>
             <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
         </div>
