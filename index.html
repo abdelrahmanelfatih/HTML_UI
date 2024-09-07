@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Creator</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tg-theme-bg-color: #f7f7f7;
+            --tg-theme-bg-color: #ffffff;
             --tg-theme-text-color: #333333;
             --tg-theme-hint-color: #999999;
             --tg-theme-link-color: #0088cc;
@@ -17,7 +16,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
             margin: 0;
@@ -27,151 +26,111 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .container {
-            background: #ffffff;
+            background: #f9f9f9;
             width: 100%;
             max-width: 414px;
             height: 100vh;
             overflow-y: auto;
             box-sizing: border-box;
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            gap: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         .header {
             text-align: center;
             position: relative;
-            padding: 20px 0;
+            padding: 15px 0;
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
-            border-radius: 12px;
-            margin-bottom: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
-
         .header h1 {
-            font-size: 28px;
-            font-weight: 600;
+            font-size: 24px;
             margin: 0;
         }
-
         .bot-label {
-            font-size: 14px;
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.8);
-            margin-top: 4px;
         }
-
         .cancel-btn {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            background-color: rgba(255, 255, 255, 0.2);
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
             border: none;
             color: var(--tg-theme-button-text-color);
             font-size: 14px;
             cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
+            z-index: 10;
         }
-
         .cancel-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+            text-decoration: underline;
         }
-
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 5px;
+            margin-bottom: 15px;
         }
-
         .form-group label {
-            font-weight: 500;
+            font-weight: bold;
             color: var(--tg-theme-text-color);
-            font-size: 14px;
         }
-
         #title, #description, #currency {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             background-color: #ffffff;
             color: var(--tg-theme-text-color);
-            transition: border-color 0.3s ease;
         }
-
-        #title:focus, #description:focus, #currency:focus {
-            outline: none;
-            border-color: var(--tg-theme-button-color);
-        }
-
         .description-area {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
-
         .input-group {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
             width: 100%;
         }
-
         #description {
             flex: 1;
             height: 80px;
-            resize: vertical;
         }
-
         .small-attach-btn {
             background: transparent;
             border: none;
             cursor: pointer;
-            padding: 0;
         }
-
         .attach-icon {
             width: 24px;
             height: 24px;
             border-radius: 4px;
-            transition: opacity 0.3s ease;
         }
-
-        .attach-icon:hover {
-            opacity: 0.8;
-        }
-
         .box {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 10px;
             border: 1px solid #e0e0e0;
         }
-
         .item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 8px;
+            padding: 10px;
             border-radius: 8px;
             background: #f5f5f5;
             border: 1px solid #e0e0e0;
-            transition: background-color 0.3s ease;
         }
-
-        .item:hover {
-            background-color: #f0f0f0;
-        }
-
         .quantity, .title, .price {
             flex: 1;
             text-align: center;
@@ -179,228 +138,460 @@
             border: 1px dashed transparent;
             color: var(--tg-theme-text-color);
             position: relative;
-            padding: 6px;
-            font-size: 14px;
+            padding: 5px;
         }
-
         .quantity-number, .title, .price {
             font-style: italic;
-            padding: 6px;
+            padding: 5px;
         }
-
         .quantity-number::before,
         .title::before,
         .price::before {
             content: attr(data-placeholder);
             position: absolute;
-            left: 6px;
+            left: 5px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--tg-theme-hint-color);
             pointer-events: none;
-            transition: opacity 0.3s ease;
         }
-
         .quantity-number:focus::before,
         .title:focus::before,
         .price:focus::before,
         .quantity-number:not(:empty)::before,
         .title:not(:empty)::before,
         .price:not(:empty)::before {
-            opacity: 0;
+            display: none;
         }
-
         .delete-button {
             margin-left: 10px;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             color: #e74c3c;
             border: none;
             background: none;
             padding: 0;
-            transition: color 0.3s ease;
         }
-
         .delete-button:hover {
             color: #c0392b;
         }
-
         .add-button {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border: none;
             border-radius: 50%;
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
-            font-size: 24px;
+            font-size: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            margin-top: 16px;
+            margin-top: 10px;
             align-self: center;
-            transition: background-color 0.3s ease, transform 0.3s ease;
         }
-
         .add-button:hover {
-            background-color: #0077b3;
-            transform: scale(1.05);
+            opacity: 0.8;
         }
-
         .total {
             text-align: right;
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 24px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
             color: var(--tg-theme-text-color);
             background-color: #f0f0f0;
-            padding: 16px;
+            padding: 10px;
             border-radius: 8px;
         }
-
         .create-btn {
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 8px;
-            padding: 16px;
-            font-size: 18px;
-            font-weight: 600;
+            padding: 12px;
+            font-size: 16px;
             cursor: pointer;
             width: 100%;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 24px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
-
         .create-btn:hover {
             background-color: #0077b3;
-            transform: translateY(-2px);
         }
-
         .invoice-settings {
             background-color: #ffffff;
-            padding: 16px;
+            padding: 15px;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
         }
-
+        .invoice-settings h2 {
+            font-size: 18px;
+            margin: 0 0 15px;
+            color: var(--tg-theme-text-color);
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
         .setting-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
         }
-
-        .setting-label {
-            font-weight: 500;
-            color: var(--tg-theme-text-color);
+        .setting-item label {
             font-size: 14px;
+            color: var(--tg-theme-text-color);
         }
-
-        .toggle-switch {
-            width: 40px;
-            height: 20px;
-            background: #ddd;
-            border-radius: 10px;
+        .switch {
             position: relative;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
         }
-
-        .toggle-switch::before {
-            content: "";
-            width: 16px;
-            height: 16px;
-            background: #fff;
-            border-radius: 50%;
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
             position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
         }
-
-        .toggle-switch.checked {
-            background: var(--tg-theme-button-color);
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
         }
-
-        .toggle-switch.checked::before {
-            left: 22px;
+        input:checked + .slider {
+            background-color: var(--tg-theme-button-color);
         }
-
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+        .file-preview {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 8px;
+            overflow: hidden;
+        }
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         .error-message {
             color: #e74c3c;
             font-size: 12px;
-            margin-top: 4px;
+            margin-top: 5px;
+            background-color: #fde8e8;
+            padding: 5px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Mr. Crab's Invoicer</h1>
-            <span class="bot-label">Bot Name</span>
+            <h1>Mr Crab's Invoicer</h1>
+            <p class="bot-label">bot</p>
             <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
         </div>
 
         <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" id="title" placeholder="Invoice Title">
+            <input type="text" id="title" placeholder="Product name, 1-32 characters">
             <div id="title-error" class="error-message"></div>
         </div>
 
         <div class="form-group description-area">
-            <button class="small-attach-btn" onclick="handleFileAttachment()">
-                <img class="attach-icon" src="attachment_icon.png" alt="Attach">
-            </button>
-            <textarea id="description" placeholder="Description"></textarea>
-            <div id="description-error" class="error-message"></div>
+            <label for="description">Description</label>
+            <div class="input-group">
+                <button class="small-attach-btn" onclick="handleFileAttachment()">
+                    <img src="https://cdn-icons-png.flaticon.com/512/860/860790.png" alt="Attach" class="attach-icon">
+                </button>
+                <input type="text" id="description" placeholder="Product description, 1-255 characters">
+                <input type="file" id="fileAttachment" style="display: none;" onchange="handleFilePreview(event)">
+                <div id="filePreview" class="file-preview"></div>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="currency">Currency</label>
-            <input type="text" id="currency" placeholder="USD">
+            <select id="currency">
+                <option value="usd">USD</option>
+                <option value="eur">EUR</option>
+            </select>
         </div>
 
-        <div class="box" id="items-box">
-            <div class="item" data-item-id="1">
-                <input class="quantity quantity-number" type="number" placeholder="1">
-                <input class="title" type="text" placeholder="Item Name">
-                <input class="price" type="text" placeholder="Price">
-                <button class="delete-button" onclick="removeItem(this)">×</button>
+        <div class="box">
+            <div class="item">
+                <span class="quantity">
+                    <span class="quantity-number" contenteditable="true" data-placeholder="Qty" oninput="updateTotal()"></span>x
+                </span>
+                <span class="title" contenteditable="true" data-placeholder="Item name"></span>
+                <span class="price" contenteditable="true" data-placeholder="Price" oninput="validatePrice(this); updateTotal()"></span>
+                <button class="delete-button" onclick="removeItem(event)">x</button>
             </div>
-            <div id="item-error" class="error-message"></div>
         </div>
 
         <button class="add-button" onclick="addItem()">+</button>
+        <div id="item-errors" class="error-message"></div>
+
+        <div class="total">Total: <span id="total-amount">0.00</span></div>
 
         <div class="invoice-settings">
+            <h2>Invoice Settings</h2>
             <div class="setting-item">
-                <span class="setting-label">Require Name</span>
-                <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                <label for="require-name">Require Name</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-name">
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="setting-item">
-                <span class="setting-label">Require Email</span>
-                <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                <label for="require-email">Require Email</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-email">
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="setting-item">
-                <span class="setting-label">Require Phone</span>
-                <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                <label for="require-phone">Require Phone</label>
+                <label class="switch">
+                    <input type="checkbox" id="require-phone">
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="setting-item">
-                <span class="setting-label">Protect Content</span>
-                <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                <label for="protect-content">Protect Content</label>
+                <label class="switch">
+                    <input type="checkbox" id="protect-content">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
-        <div class="total">Total: $0.00</div>
-
+        <div id="error-messages" class="error-message" style="display: none;"></div>
         <button class="create-btn" onclick="handleFormSubmit()">Create Invoice</button>
     </div>
 
-    <script src="scripts.js"></script>
+    <script>
+        let attachedFile = null;
+        let tg;
+
+        window.addEventListener('load', function() {
+            tg = window.Telegram.WebApp;
+            tg.ready();
+        });
+
+        function handleCancel() {
+            if (tg && tg.close) {
+                tg.close();
+            } else {
+                console.log('Telegram WebApp is not available. Closing action simulated.');
+                // You could redirect to another page or show a message here
+            }
+        }
+
+        function handleFileAttachment() {
+            document.getElementById('fileAttachment').click();
+        }
+
+        function handleFilePreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                attachedFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('filePreview');
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="File Preview">';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addItem() {
+            const box = document.querySelector('.box');
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <span class="quantity">
+                    <span class="quantity-number" contenteditable="true" data-placeholder="Qty" oninput="updateTotal()"></span>x
+                </span>
+                <span class="title" contenteditable="true" data-placeholder="Item name"></span>
+                <span class="price" contenteditable="true" data-placeholder="Price" oninput="validatePrice(this); updateTotal()"></span>
+                <button class="delete-button" onclick="removeItem(event)">x</button>
+            `;
+            box.appendChild(item);
+            updateTotal();
+        }
+
+        function removeItem(event) {
+            const item = event.target.closest('.item');
+            if (document.querySelectorAll('.item').length > 1) {
+                item.remove();
+                updateTotal();
+            } else {
+                document.getElementById('item-errors').textContent = "At least one item must be present.";
+            }
+        }
+
+        function validatePrice(element) {
+            element.textContent = element.textContent.replace(/[^0-9.]/g, '');
+            if (element.textContent.split('.').length > 2) {
+                element.textContent = element.textContent.replace(/\.+$/, '');
+            }
+        }
+
+        function updateTotal() {
+            const items = document.querySelectorAll('.item');
+            let total = 0;
+            items.forEach(item => {
+                const quantity = parseFloat(item.querySelector('.quantity-number').textContent) || 0;
+                const price = parseFloat(item.querySelector('.price').textContent) || 0;
+                total += quantity * price;
+            });
+            document.getElementById('total-amount').textContent = total.toFixed(2);
+
+            let isValid = true;
+
+            if (!title) {
+                document.getElementById('title-error').textContent = "Title cannot be empty";
+                isValid = false;
+            } else {
+                document.getElementById('title-error').textContent = "";
+            }
+
+            items.forEach(item => {
+                const quantity = item.querySelector('.quantity-number').textContent.trim();
+                const title = item.querySelector('.title').textContent.trim();
+                const price = item.querySelector('.price').textContent.trim();
+
+                if (!title || !quantity || !price || isNaN(price)) {
+                    document.getElementById('item-errors').textContent = "Item fields cannot be empty and price must be valid.";
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                // Handle the data submission
+                console.log("Form Submitted");
+            }
+        }
+
+        function handleFormSubmit() {
+            let chatId;
+            
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                chatId = tg.initDataUnsafe.user.id;
+            } else {
+                console.warn('Telegram WebApp data is not available. Using a placeholder chat ID for testing.');
+                chatId = 'TEST_USER_' + Date.now(); // Generate a unique test user ID
+            }
+
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const currency = document.getElementById('currency').value;
+            const items = Array.from(document.querySelectorAll('.item')).map(item => ({
+                quantity: parseFloat(item.querySelector('.quantity-number').textContent) || 0,
+                title: item.querySelector('.title').textContent.trim(),
+                price: parseFloat(item.querySelector('.price').textContent) || 0
+            }));
+            const total = parseFloat(document.getElementById('total-amount').textContent);
+            const requireName = document.getElementById('require-name').checked;
+            const requireEmail = document.getElementById('require-email').checked;
+            const requirePhone = document.getElementById('require-phone').checked;
+            const protectContent = document.getElementById('protect-content').checked;
+
+            // Validate required fields
+            let errors = [];
+            if (!title) errors.push("Title is required");
+            if (items.length === 0) errors.push("At least one item is required");
+            if (items.some(item => !item.title || item.quantity <= 0 || item.price <= 0)) {
+                errors.push("All items must have a title, quantity, and price");
+            }
+
+            if (errors.length > 0) {
+                console.error('Validation errors:', errors);
+                const errorDiv = document.getElementById('error-messages');
+                errorDiv.innerHTML = errors.map(error => `<p>${error}</p>`).join('');
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Clear any previous error messages
+            document.getElementById('error-messages').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('currency', currency);
+            formData.append('items', JSON.stringify(items));
+            formData.append('total', total);
+            formData.append('require_name', requireName);
+            formData.append('require_email', requireEmail);
+            formData.append('require_phone', requirePhone);
+            formData.append('protect_content', protectContent);
+
+            if (attachedFile) {
+                formData.append('file', attachedFile);
+            }
+
+            // Log the data being sent
+            console.log('Sending data:', Object.fromEntries(formData));
+
+            // Show loading indicator
+            const createBtn = document.querySelector('.create-btn');
+            createBtn.textContent = 'Creating...';
+            createBtn.disabled = true;
+
+            fetch('https://your-fastapi-backend-url.com/create_invoice', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Invoice created successfully!');
+                if (tg && tg.close) {
+                    tg.close();
+                } else {
+                    console.log('Telegram WebApp close function not available. Action simulated.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to create invoice. Please try again.\nError: ' + error.message);
+            })
+            .finally(() => {
+                createBtn.textContent = 'Create Invoice';
+                createBtn.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
