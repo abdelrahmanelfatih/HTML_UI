@@ -7,18 +7,41 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg-color: #ffffff;
-            --tg-theme-text-color: #333333;
-            --tg-theme-hint-color: #999999;
-            --tg-theme-link-color: #0088cc;
-            --tg-theme-button-color: #0088cc;
-            --tg-theme-button-text-color: #ffffff;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --hint-color: #999999;
+            --link-color: #0088cc;
+            --button-color: #0088cc;
+            --button-text-color: #ffffff;
+            --box-bg-color: #f9f9f9;
+            --border-color: #e0e0e0;
+            --item-bg-color: #f5f5f5;
+            --error-color: #e74c3c;
+            --error-bg-color: #fde8e8;
+            --total-bg-color: #f0f0f0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1e1e1e;
+                --text-color: #ffffff;
+                --hint-color: #cccccc;
+                --link-color: #4db8ff;
+                --button-color: #4db8ff;
+                --button-text-color: #ffffff;
+                --box-bg-color: #2d2d2d;
+                --border-color: #444444;
+                --item-bg-color: #3a3a3a;
+                --error-color: #ff6b6b;
+                --error-bg-color: #4d2c2c;
+                --total-bg-color: #3a3a3a;
+            }
         }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #ffffff;
-            color: #333333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
@@ -27,7 +50,7 @@
             min-height: 100vh;
         }
         .container {
-            background: #ffffff;
+            background: var(--box-bg-color);
             width: 100%;
             max-width: 414px;
             height: 100vh;
@@ -43,8 +66,8 @@
             text-align: center;
             position: relative;
             padding: 15px 0;
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
+            background-color: var(--button-color);
+            color: var(--button-text-color);
             border-radius: 8px;
             margin-bottom: 20px;
         }
@@ -62,7 +85,7 @@
             right: 10px;
             background-color: transparent;
             border: none;
-            color: var(--tg-theme-button-text-color);
+            color: var(--button-text-color);
             font-size: 14px;
             cursor: pointer;
             z-index: 10;
@@ -78,15 +101,15 @@
         }
         .form-group label {
             font-weight: bold;
-            color: #333333;
+            color: var(--text-color);
         }
         #title, #description, #currency {
             padding: 10px;
-            border: 1px solid #999999;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 14px;
-            background-color: #ffffff;
-            color: #333333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
         .description-area {
             display: flex;
@@ -112,16 +135,15 @@
             width: 24px;
             height: 24px;
             border-radius: 4px;
-            filter: invert(0.5);
         }
         .box {
-            background-color: #ffffff;
+            background-color: var(--box-bg-color);
             padding: 15px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            border: 1px solid #999999;
+            border: 1px solid var(--border-color);
         }
         .item {
             display: flex;
@@ -129,15 +151,15 @@
             gap: 8px;
             padding: 10px;
             border-radius: 8px;
-            background: #ffffff;
-            border: 1px solid #999999;
+            background: var(--item-bg-color);
+            border: 1px solid var(--border-color);
         }
         .quantity, .title, .price {
             flex: 1;
             text-align: center;
             cursor: text;
             border: 1px dashed transparent;
-            color: #333333;
+            color: var(--text-color);
             position: relative;
             padding: 5px;
         }
@@ -153,7 +175,7 @@
             left: 5px;
             top: 50%;
             transform: translateY(-50%);
-            color: #999999;
+            color: var(--hint-color);
             pointer-events: none;
         }
         .quantity-number:focus::before,
@@ -168,21 +190,21 @@
             margin-left: 10px;
             font-size: 16px;
             cursor: pointer;
-            color: #e74c3c;
+            color: var(--error-color);
             border: none;
             background: none;
             padding: 0;
         }
         .delete-button:hover {
-            color: #c0392b;
+            opacity: 0.8;
         }
         .add-button {
             width: 40px;
             height: 40px;
             border: none;
             border-radius: 50%;
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
+            background-color: var(--button-color);
+            color: var(--button-text-color);
             font-size: 20px;
             display: flex;
             justify-content: center;
@@ -200,15 +222,14 @@
             font-size: 18px;
             font-weight: bold;
             margin-top: 20px;
-            color: #333333;
-            background-color: #ffffff;
+            color: var(--text-color);
+            background-color: var(--total-bg-color);
             padding: 10px;
             border-radius: 8px;
-            border: 1px solid #999999;
         }
         .create-btn {
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
+            background-color: var(--button-color);
+            color: var(--button-text-color);
             border: none;
             border-radius: 8px;
             padding: 12px;
@@ -223,16 +244,16 @@
             opacity: 0.8;
         }
         .invoice-settings {
-            background-color: #ffffff;
+            background-color: var(--box-bg-color);
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid #999999;
+            border: 1px solid var(--border-color);
         }
         .invoice-settings h2 {
             font-size: 18px;
             margin: 0 0 15px;
-            color: #333333;
-            border-bottom: 1px solid #999999;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
         .setting-item {
@@ -243,7 +264,7 @@
         }
         .setting-item label {
             font-size: 14px;
-            color: #333333;
+            color: var(--text-color);
         }
         .switch {
             position: relative;
@@ -263,7 +284,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #999999;
+            background-color: var(--hint-color);
             transition: .4s;
             border-radius: 24px;
         }
@@ -275,11 +296,11 @@
             border-radius: 50%;
             left: 3px;
             bottom: 3px;
-            background-color: #ffffff;
+            background-color: var(--bg-color);
             transition: .4s;
         }
         input:checked + .slider {
-            background-color: var(--tg-theme-button-color);
+            background-color: var(--button-color);
         }
         input:checked + .slider:before {
             transform: translateX(16px);
@@ -287,8 +308,8 @@
         .file-preview {
             width: 40px;
             height: 40px;
-            border: 1px solid #999999;
-            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
             border-radius: 4px;
             display: inline-block;
             margin-left: 8px;
@@ -300,10 +321,10 @@
             object-fit: cover;
         }
         .error-message {
-            color: #e74c3c;
+            color: var(--error-color);
             font-size: 12px;
             margin-top: 5px;
-            background-color: rgba(231, 76, 60, 0.1);
+            background-color: var(--error-bg-color);
             padding: 5px;
             border-radius: 4px;
         }
@@ -402,13 +423,7 @@
         window.addEventListener('load', function() {
             tg = window.Telegram.WebApp;
             tg.ready();
-            applyTheme();
         });
-
-        function applyTheme() {
-            // We're not applying the Telegram theme colors anymore
-            // to keep the UI consistent in both light and dark modes
-        }
 
         function handleCancel() {
             if (tg && tg.close) {
