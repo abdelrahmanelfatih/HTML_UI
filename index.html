@@ -27,7 +27,7 @@
             min-height: 100vh;
         }
         .container {
-            background: #f9f9f9;
+            background: var(--tg-theme-bg-color);
             width: 100%;
             max-width: 414px;
             height: 100vh;
@@ -82,10 +82,10 @@
         }
         #title, #description, #currency {
             padding: 10px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--tg-theme-hint-color);
             border-radius: 8px;
             font-size: 14px;
-            background-color: #ffffff;
+            background-color: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
         }
         .description-area {
@@ -112,15 +112,16 @@
             width: 24px;
             height: 24px;
             border-radius: 4px;
+            filter: invert(var(--tg-theme-text-color));
         }
         .box {
-            background-color: #ffffff;
+            background-color: var(--tg-theme-bg-color);
             padding: 15px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--tg-theme-hint-color);
         }
         .item {
             display: flex;
@@ -128,8 +129,8 @@
             gap: 8px;
             padding: 10px;
             border-radius: 8px;
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
+            background: var(--tg-theme-bg-color);
+            border: 1px solid var(--tg-theme-hint-color);
         }
         .quantity, .title, .price {
             flex: 1;
@@ -200,9 +201,10 @@
             font-weight: bold;
             margin-top: 20px;
             color: var(--tg-theme-text-color);
-            background-color: #f0f0f0;
+            background-color: var(--tg-theme-bg-color);
             padding: 10px;
             border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color);
         }
         .create-btn {
             background-color: var(--tg-theme-button-color);
@@ -218,19 +220,19 @@
             transition: background-color 0.3s ease;
         }
         .create-btn:hover {
-            background-color: #0077b3;
+            opacity: 0.8;
         }
         .invoice-settings {
-            background-color: #ffffff;
+            background-color: var(--tg-theme-bg-color);
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--tg-theme-hint-color);
         }
         .invoice-settings h2 {
             font-size: 18px;
             margin: 0 0 15px;
             color: var(--tg-theme-text-color);
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--tg-theme-hint-color);
             padding-bottom: 10px;
         }
         .setting-item {
@@ -261,7 +263,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: var(--tg-theme-hint-color);
             transition: .4s;
             border-radius: 24px;
         }
@@ -273,7 +275,7 @@
             border-radius: 50%;
             left: 3px;
             bottom: 3px;
-            background-color: white;
+            background-color: var(--tg-theme-bg-color);
             transition: .4s;
         }
         input:checked + .slider {
@@ -285,8 +287,8 @@
         .file-preview {
             width: 40px;
             height: 40px;
-            border: 1px solid #e0e0e0;
-            background-color: #ffffff;
+            border: 1px solid var(--tg-theme-hint-color);
+            background-color: var(--tg-theme-bg-color);
             border-radius: 4px;
             display: inline-block;
             margin-left: 8px;
@@ -301,7 +303,7 @@
             color: #e74c3c;
             font-size: 12px;
             margin-top: 5px;
-            background-color: #fde8e8;
+            background-color: rgba(231, 76, 60, 0.1);
             padding: 5px;
             border-radius: 4px;
         }
@@ -400,7 +402,18 @@
         window.addEventListener('load', function() {
             tg = window.Telegram.WebApp;
             tg.ready();
+            applyTheme();
         });
+
+        function applyTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color);
+            root.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color);
+            root.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color);
+            root.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color);
+            root.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color);
+            root.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color);
+        }
 
         function handleCancel() {
             if (tg && tg.close) {
