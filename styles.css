@@ -1,16 +1,16 @@
 :root {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --hint-color: #999999;
-    --link-color: #0088cc;
-    --button-color: #0088cc;
-    --button-text-color: #ffffff;
-    --box-bg-color: #f9f9f9;
-    --border-color: #e0e0e0;
-    --item-bg-color: #f5f5f5;
+    --bg-color: var(--tg-theme-bg-color, #ffffff);
+    --text-color: var(--tg-theme-text-color, #000000);
+    --hint-color: var(--tg-theme-hint-color, #999999);
+    --link-color: var(--tg-theme-link-color, #0088cc);
+    --button-color: var(--tg-theme-button-color, #0088cc);
+    --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+    --box-bg-color: var(--tg-theme-secondary-bg-color, #f9f9f9);
+    --border-color: var(--tg-theme-hint-color, #e0e0e0);
+    --item-bg-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
     --error-color: #e74c3c;
     --error-bg-color: #fde8e8;
-    --total-bg-color: #f0f0f0;
+    --total-bg-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
 }
 
 body {
@@ -237,6 +237,7 @@ body {
 .invoice-settings h2 {
     font-size: 18px;
     margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .setting-item {
@@ -245,6 +246,7 @@ body {
     align-items: center;
     padding: 10px 0;
     border-top: 1px solid var(--border-color);
+    color: var(--text-color);
 }
 
 .switch {
@@ -320,3 +322,41 @@ input:checked + .slider:before {
     border: 1px solid var(--border-color);
     border-radius: 4px;
 }
+
+/* Ensure text color is white in dark mode and black in light mode */
+body[data-theme="dark"] {
+    --text-color: #ffffff;
+    --bg-color: #1c1c1c;
+    --box-bg-color: #2c2c2c;
+    --item-bg-color: #3c3c3c;
+    --border-color: #4c4c4c;
+}
+
+body[data-theme="light"] {
+    --text-color: #000000;
+    --bg-color: #ffffff;
+    --box-bg-color: #f9f9f9;
+    --item-bg-color: #f5f5f5;
+    --border-color: #e0e0e0;
+}
+
+/* Override all text colors to ensure consistency */
+* {
+    color: var(--text-color);
+}
+
+/* Specific overrides for elements that might need different colors */
+.header, .cancel-btn, .add-button, .create-btn {
+    color: var(--button-text-color);
+}
+
+.error-message {
+    color: var(--error-color);
+}
+
+.quantity-number::before,
+.title::before,
+.price::before {
+    color: var(--hint-color);
+}
+
