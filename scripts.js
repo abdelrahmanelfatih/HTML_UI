@@ -46,7 +46,7 @@ function addItem() {
             <span class="quantity-number" contenteditable="true" data-placeholder="Qty" oninput="updateTotal()"></span>x
         </span>
         <span class="title" contenteditable="true" data-placeholder="Item name"></span>
-        <span class="price" contenteditable="true" data-placeholder="Price" oninput="validatePrice(this); updateTotal()"></span>
+        <span class="price" contenteditable="true" data-placeholder="Price" oninput="updateTotal()"></span>
         <button class="delete-button" onclick="removeItem(event)">x</button>
     `;
     box.appendChild(item);
@@ -58,15 +58,6 @@ function removeItem(event) {
     if (document.querySelectorAll('.item').length > 1) {
         item.remove();
         updateTotal();
-    } else {
-        document.getElementById('item-errors').textContent = "At least one item must be present.";
-    }
-}
-
-function validatePrice(element) {
-    element.textContent = element.textContent.replace(/[^0-9.]/g, '');
-    if (element.textContent.split('.').length > 2) {
-        element.textContent = element.textContent.replace(/\.+$/, '');
     }
 }
 
@@ -79,41 +70,19 @@ function updateTotal() {
         total += quantity * price;
     });
     document.getElementById('total-amount').textContent = total.toFixed(2);
-
-    let isValid = true;
-
-    if (!title) {
-        document.getElementById('title-error').textContent = "Title cannot be empty";
-        isValid = false;
-    } else {
-        document.getElementById('title-error').textContent = "";
-    }
-
-    items.forEach(item => {
-        const quantity = item.querySelector('.quantity-number').textContent.trim();
-        const title = item.querySelector('.title').textContent.trim();
-        const price = item.querySelector('.price').textContent.trim();
-
-        if (!title || !quantity || !price || isNaN(price)) {
-            document.getElementById('item-errors').textContent = "Item fields cannot be empty and price must be valid.";
-            isValid = false;
-        }
-    });
-
-    if (isValid) {
-        // Handle the data submission
-        console.log("Form Submitted");
-    }
 }
 
 function handleFormSubmit() {
+    // Clear previous error messages
+    document.getElementById('error-messages').innerHTML = '';
+    document.getElementById('error-messages').style.display = 'none';
+
     let chatId;
-    
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         chatId = tg.initDataUnsafe.user.id;
     } else {
         console.warn('Telegram WebApp data is not available. Using a placeholder chat ID for testing.');
-        chatId = 'TEST_USER_' + Date.now(); // Generate a unique test user ID
+        chatId = 'TEST_USER_' + Date.now();
     }
 
     const title = document.getElementById('title').value.trim();
@@ -139,19 +108,14 @@ function handleFormSubmit() {
     }
 
     if (errors.length > 0) {
-        console.error('Validation errors:', errors);
         const errorDiv = document.getElementById('error-messages');
         errorDiv.innerHTML = errors.map(error => `<p>${error}</p>`).join('');
         errorDiv.style.display = 'block';
         return;
     }
 
-    // Clear any previous error messages
-    document.getElementById('error-messages').style.display = 'none';
-
-    // Create a JSON object
     const jsonData = {
-        chatId: chatId, // Changed from chat_id to chatId
+        chatId: chatId,
         title: title,
         description: description,
         currency: currency,
@@ -163,10 +127,8 @@ function handleFormSubmit() {
         protect_content: protectContent
     };
 
-    // Log the data being sent
     console.log('Sending data:', jsonData);
 
-    // Show progress bar
     const progressBar = document.createElement('div');
     progressBar.style.width = '0%';
     progressBar.style.height = '4px';
@@ -177,7 +139,6 @@ function handleFormSubmit() {
     progressBar.style.transition = 'width 0.3s ease-out';
     document.body.appendChild(progressBar);
 
-    // Disable the main button and show loading state
     tg.MainButton.setParams({
         text: 'Creating Invoice...',
         is_active: false,
@@ -194,28 +155,25 @@ function handleFormSubmit() {
     .then(response => {
         progressBar.style.width = '50%';
         if (!response.ok) {
-            return response.json().then(err => { throw err; });
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
         progressBar.style.width = '100%';
         console.log('Success:', data);
-        tg.showAlert('Invoice created successfully!', () => {
-            tg.close();
-        });
+        tg.close();
     })
     .catch((error) => {
         console.error('Error:', error);
-        tg.showAlert('Failed to create invoice. Please try again.\nError: ' + (error.detail || error.message));
+        document.getElementById('error-messages').innerHTML = '<p>Error in creating invoice. Please try again later.</p>';
+        document.getElementById('error-messages').style.display = 'block';
     })
     .finally(() => {
-        // Remove progress bar
         setTimeout(() => {
             document.body.removeChild(progressBar);
         }, 300);
 
-        // Reset main button
         tg.MainButton.setParams({
             text: 'Create Invoice',
             is_active: true,
