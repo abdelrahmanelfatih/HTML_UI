@@ -359,4 +359,3 @@ body[data-theme="light"] {
 .price::before {
     color: var(--hint-color);
 }
-
