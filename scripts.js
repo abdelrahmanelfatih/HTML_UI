@@ -146,7 +146,7 @@ function handleFormSubmit() {
 
     // Create a JSON object
     const jsonData = {
-        chat_id: chatId,
+        chatId: chatId, // Changed from chat_id to chatId
         title: title,
         description: description,
         currency: currency,
@@ -166,7 +166,7 @@ function handleFormSubmit() {
     createBtn.textContent = 'Creating...';
     createBtn.disabled = true;
 
-    fetch('https://df04-2001-16a2-7180-7900-d116-aed0-2578-a2f9.ngrok-free.app/send', {
+    fetch('https://your-fastapi-backend-url.com/send', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
