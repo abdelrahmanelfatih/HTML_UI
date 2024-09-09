@@ -144,24 +144,22 @@ function handleFormSubmit() {
     // Clear any previous error messages
     document.getElementById('error-messages').style.display = 'none';
 
-    const formData = new FormData();
-    formData.append('chat_id', chatId);
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('currency', currency);
-    formData.append('items', JSON.stringify(items));
-    formData.append('total', total);
-    formData.append('require_name', requireName);
-    formData.append('require_email', requireEmail);
-    formData.append('require_phone', requirePhone);
-    formData.append('protect_content', protectContent);
-
-    if (attachedFile) {
-        formData.append('file', attachedFile);
-    }
+    // Create a JSON object instead of FormData
+    const jsonData = {
+        chat_id: chatId,
+        title: title,
+        description: description,
+        currency: currency,
+        items: items,
+        total: total,
+        require_name: requireName,
+        require_email: requireEmail,
+        require_phone: requirePhone,
+        protect_content: protectContent
+    };
 
     // Log the data being sent
-    console.log('Sending data:', Object.fromEntries(formData));
+    console.log('Sending data:', jsonData);
 
     // Show loading indicator
     const createBtn = document.querySelector('.create-btn');
@@ -170,7 +168,10 @@ function handleFormSubmit() {
 
     fetch('https://df04-2001-16a2-7180-7900-d116-aed0-2578-a2f9.ngrok-free.app/send', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData)
     })
     .then(response => {
         if (!response.ok) {
