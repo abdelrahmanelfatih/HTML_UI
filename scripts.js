@@ -4,6 +4,11 @@ let tg;
 window.addEventListener('load', function() {
     tg = window.Telegram.WebApp;
     tg.ready();
+
+    // Set up the main button
+    tg.MainButton.setText('Create Invoice');
+    tg.MainButton.onClick(handleFormSubmit);
+    tg.MainButton.show();
 });
 
 function handleCancel() {
@@ -161,10 +166,23 @@ function handleFormSubmit() {
     // Log the data being sent
     console.log('Sending data:', jsonData);
 
-    // Show loading indicator
-    const createBtn = document.querySelector('.create-btn');
-    createBtn.textContent = 'Creating...';
-    createBtn.disabled = true;
+    // Show progress bar
+    const progressBar = document.createElement('div');
+    progressBar.style.width = '0%';
+    progressBar.style.height = '4px';
+    progressBar.style.backgroundColor = '#3390ec';
+    progressBar.style.position = 'fixed';
+    progressBar.style.top = '0';
+    progressBar.style.left = '0';
+    progressBar.style.transition = 'width 0.3s ease-out';
+    document.body.appendChild(progressBar);
+
+    // Disable the main button and show loading state
+    tg.MainButton.setParams({
+        text: 'Creating Invoice...',
+        is_active: false,
+        color: '#65c36d'
+    });
 
     fetch('https://df04-2001-16a2-7180-7900-d116-aed0-2578-a2f9.ngrok-free.app/send', {
         method: 'POST',
@@ -174,26 +192,37 @@ function handleFormSubmit() {
         body: JSON.stringify(jsonData)
     })
     .then(response => {
+        progressBar.style.width = '50%';
         if (!response.ok) {
             return response.json().then(err => { throw err; });
         }
         return response.json();
     })
     .then(data => {
+        progressBar.style.width = '100%';
         console.log('Success:', data);
-        alert('Invoice created successfully!');
-        if (tg && tg.close) {
+        tg.showAlert('Invoice created successfully!', () => {
             tg.close();
-        } else {
-            console.log('Telegram WebApp close function not available. Action simulated.');
-        }
+        });
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert('Failed to create invoice. Please try again.\nError: ' + (error.detail || error.message));
+        tg.showAlert('Failed to create invoice. Please try again.\nError: ' + (error.detail || error.message));
     })
     .finally(() => {
-        createBtn.textContent = 'Create Invoice';
-        createBtn.disabled = false;
+        // Remove progress bar
+        setTimeout(() => {
+            document.body.removeChild(progressBar);
+        }, 300);
+
+        // Reset main button
+        tg.MainButton.setParams({
+            text: 'Create Invoice',
+            is_active: true,
+            color: '#2cab37'
+        });
     });
 }
+
+// Remove the existing button from HTML and its event listener
+document.querySelector('.create-btn').remove();
