@@ -144,7 +144,7 @@ function handleFormSubmit() {
     // Clear any previous error messages
     document.getElementById('error-messages').style.display = 'none';
 
-    // Create a JSON object instead of FormData
+    // Create a JSON object
     const jsonData = {
         chat_id: chatId,
         title: title,
@@ -175,7 +175,7 @@ function handleFormSubmit() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json().then(err => { throw err; });
         }
         return response.json();
     })
@@ -190,7 +190,7 @@ function handleFormSubmit() {
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert('Failed to create invoice. Please try again.\nError: ' + error.message);
+        alert('Failed to create invoice. Please try again.\nError: ' + (error.detail || error.message));
     })
     .finally(() => {
         createBtn.textContent = 'Create Invoice';
