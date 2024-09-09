@@ -166,7 +166,7 @@ function handleFormSubmit() {
     createBtn.textContent = 'Creating...';
     createBtn.disabled = true;
 
-    fetch('https://your-fastapi-backend-url.com/send', {
+    fetch('https://df04-2001-16a2-7180-7900-d116-aed0-2578-a2f9.ngrok-free.app/send', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
