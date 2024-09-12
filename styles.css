@@ -293,20 +293,6 @@ input:checked + .slider:before {
     transform: translateX(14px);
 }
 
-.create-btn {
-    padding: 15px 20px;
-    background: var(--button-color);
-    color: var(--button-text-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.create-btn:hover {
-    opacity: 0.8;
-}
-
 .file-preview {
     display: flex;
     gap: 10px;
@@ -320,4 +306,98 @@ input:checked + .slider:before {
     object-fit: cover;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden; /* Prevent scrolling */
+    position: relative; /* Ensure body is the reference point */
+}
+
+.slide-container {
+    display: flex;
+    overflow: hidden; /* Hide horizontal scroll bar */
+    width: 100vw; /* Viewport width */
+    height: 100vh; /* Viewport height */
+    scroll-snap-type: x mandatory; /* Snap effect */
+    position: relative; /* Positioning for buttons */
+}
+
+.slide {
+    flex: 0 0 100%; /* Each slide takes up full viewport */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-align: start; /* Align to start of each slide */
+    transition: transform 0.5s ease; /* Smooth transition */
+    position: relative; /* Positioning for buttons */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.nav-button.left {
+    left: 10px;
+}
+
+.nav-button.right {
+    right: 10px;
+}
+
+.nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dots-container {
+    position: fixed; /* Fixed to the viewport */
+    bottom: 20px; /* Position at the bottom of the viewport */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 100; /* High z-index to ensure visibility */
+    pointer-events: auto; /* Ensure clicks register on dots */
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for active state */
+}
+
+.dot.active {
+    background-color: #007bff;
 }

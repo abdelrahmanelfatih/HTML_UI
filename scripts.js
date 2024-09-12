@@ -1,3 +1,116 @@
+document.addEventListener("DOMContentLoaded", function () {
+    // Check if the user has already viewed the tutorial
+    if (localStorage.getItem("tutorialViewed") === "false") {
+        showUI();
+    } else {
+        showTutorial();
+    }
+});
+
+function showTutorial() {
+    document.getElementById('welcome-page').style.display = 'flex';
+    document.getElementById('welcome-dots').style.display = 'flex';
+    document.getElementById('ui-section').style.display = 'none';
+
+    const slideContainer = document.querySelector('.slide-container');
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let currentIndex = 0;
+    let startX, startY, endX, endY;
+    const minSwipeDistance = 50; // Minimum distance for a swipe to be registered
+
+    if (!slideContainer) {
+        console.error('Slide container not found.');
+        return;
+    }
+
+    slideContainer.addEventListener('touchstart', function (e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    slideContainer.addEventListener('touchend', function (e) {
+        endX = e.changedTouches[0].clientX;
+        endY = e.changedTouches[0].clientY;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) { // Horizontal swipe
+            if (Math.abs(diffX) > minSwipeDistance) {
+                if (diffX > 0) {
+                    navigateSlides(1); // Swipe left
+                } else {
+                    navigateSlides(-1); // Swipe right
+                }
+            }
+        }
+    }
+
+    // Navigation function
+    window.navigateSlides = function(direction) {
+        currentIndex += direction;
+
+        // Implement circular navigation
+        if (currentIndex < 0) {
+            currentIndex = slides.length - 1;
+        } else if (currentIndex >= slides.length) {
+            currentIndex = 0;
+        }
+
+        // Update slide visibility with a smooth transition
+        slides.forEach((slide, index) => {
+            slide.style.transition = 'opacity 0.3s ease-in-out';
+            slide.style.opacity = index === currentIndex ? '1' : '0';
+            slide.style.display = index === currentIndex ? 'flex' : 'none';
+        });
+
+        updateDots(currentIndex);
+        updateMainButton(currentIndex, slides.length);
+    };
+
+    // Navigate to a specific slide
+    window.navigateToSlide = function(index) {
+        currentIndex = index;
+        slideContainer.scrollLeft = currentIndex * window.innerWidth;
+        updateDots(currentIndex);
+    };
+
+    // Update the dots based on the current slide
+    function updateDots(index) {
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+    }
+
+    // Update the "Get Started" button click handler
+    const getStartedButton = document.getElementById("getStartedButton");
+    if (getStartedButton) {
+        getStartedButton.addEventListener("click", function () {
+            if (typeof(Storage) !== "undefined") {
+                localStorage.setItem("tutorialViewed", "true");
+            } else {
+                console.error('Local Storage is not supported.');
+            }
+            showUI();
+        });
+    } else {
+        console.error('Get Started button not found.');
+    }
+
+    // Initial update of dots
+    updateDots(currentIndex);
+}
+
+function showUI() {
+    document.getElementById('welcome-page').style.display = 'none';
+    document.getElementById('welcome-dots').style.display = 'none';
+    document.getElementById('ui-section').style.display = 'block';
+}
+
 let attachedFile = null;
 let tg;
 
@@ -73,7 +186,7 @@ function updateTotal() {
 }
 
 function handleFormSubmit() {
-    // Clear previous error messages
+               // Clear previous error messages
     document.getElementById('error-messages').innerHTML = '';
     document.getElementById('error-messages').style.display = 'none';
 
@@ -144,8 +257,9 @@ function handleFormSubmit() {
         is_active: false,
         color: '#65c36d'
     });
-
-    fetch('https://e59c-2001-16a2-7180-7900-d116-aed0-2578-a2f9.ngrok-free.app/send', {
+    
+    //replace with your backend url
+    fetch('https://your-backend-url/endpoint', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -182,5 +296,84 @@ function handleFormSubmit() {
     });
 }
 
-// Remove the existing button from HTML and its event listener
-document.querySelector('.create-btn').remove();
+window.onload = function() {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.MainButton.setText('Next').show().onClick(nextSlide);
+}
+
+function nextSlide() {
+    const slides = document.querySelectorAll('.slide');
+    const currentSlide = document.querySelector('.slide:not([style*="display: none"])');
+    const currentIndex = Array.from(slides).indexOf(currentSlide);
+    const nextIndex = currentIndex + 1;
+
+    if (nextIndex < slides.length) {
+        currentSlide.style.display = 'none';
+        slides[nextIndex].style.display = 'flex';
+        updateDots();
+
+        if (nextIndex === slides.length - 1) {
+            Telegram.WebApp.MainButton.setText('Create Invoice');
+        }
+    } else {
+        showUI();
+    }
+}
+
+function updateDots() {
+    const dots = document.querySelectorAll('.dot');
+    const currentSlideIndex = Array.from(document.querySelectorAll('.slide')).findIndex(slide => slide.style.display !== 'none');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlideIndex);
+    });
+}
+function showUI() {
+    document.getElementById('welcome-page').style.display = 'none';
+    document.getElementById('welcome-dots').style.display = 'none';
+    document.getElementById('ui-section').style.display = 'block';
+    Telegram.WebApp.MainButton.setText('Create Invoice').onClick(createInvoice);
+}
+
+function navigateSlides(direction) {
+    const slides = document.querySelectorAll('.slide');
+    const currentSlide = document.querySelector('.slide:not([style*="display: none"])');
+    const currentIndex = Array.from(slides).indexOf(currentSlide);
+    const nextIndex = currentIndex + direction;
+
+    if (nextIndex >= 0 && nextIndex < slides.length) {
+        currentSlide.style.display = 'none';
+        slides[nextIndex].style.display = 'flex';
+        updateDots();
+
+        if (nextIndex === slides.length - 1) {
+            Telegram.WebApp.MainButton.setText('Create Invoice');
+        } else {
+            Telegram.WebApp.MainButton.setText('Next').onClick(nextSlide);
+        }
+    }
+}
+
+function navigateToSlide(index) {
+    const slides = document.querySelectorAll('.slide');
+    slides.forEach((slide, i) => {
+        slide.style.display = i === index ? 'flex' : 'none';
+    });
+    updateDots();
+
+    if (index === slides.length - 1) {
+        Telegram.WebApp.MainButton.setText('Create Invoice');
+    } else {
+        Telegram.WebApp.MainButton.setText('Next').onClick(nextSlide);
+    }
+}
+
+// Add this new function to update the main button
+function updateMainButton(currentIndex, totalSlides) {
+    if (currentIndex === totalSlides - 1) {
+        Telegram.WebApp.MainButton.setText('Create Invoice');
+        Telegram.WebApp.MainButton.onClick(showUI);
+    } else {
+        Telegram.WebApp.MainButton.setText('Next');
+        Telegram.WebApp.MainButton.onClick(() => navigateSlides(1));
+    }
+}

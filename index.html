@@ -2,13 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Creator</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Mr Crab's Invoicer</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
+    <!-- Welcome Page Section -->
+    <div id="welcome-page" class="slide-container">
+        <section class="slide" id="slide1">
+            <img src="public/welcome-sticker-unscreen.gif" alt="Welcome Sticker" style="width: 200px; height: 200px; margin-bottom: 20px;">
+            <h1>Welcome!</h1>
+            <p>Learn how to use Mr. Crab's Invoicer in just a few steps.</p>
+            <button class="nav-button right" onclick="navigateSlides(1)">&#10095;</button>
+        </section>
+        <section class="slide" id="slide2">
+            <img src="public/invoice tutorial p1.jpg" alt="Step 1 Image" style="width: 200px; height: auto; margin-bottom: 20px;">
+            <h1>Step 1</h1>
+            <p>Make sure you fill out the required fields.</p>
+            <button class="nav-button left" onclick="navigateSlides(-1)">&#10094;</button>
+            <button class="nav-button right" onclick="navigateSlides(1)">&#10095;</button>
+        </section>
+        <section class="slide" id="slide3">
+            <img src="public/invoice tutorial p2.jpg" alt="Step 2 Image" style="width: 200px; height: auto; margin-bottom: 20px;">
+            <h1>Step 2</h1>
+            <p>These are some customizable fields, please customize them as you like.
+                <br>
+                <br>
+                (press the button below to start creating your invoice.)
+            </p>
+            <button class="nav-button left" onclick="navigateSlides(-1)">&#10094;</button>
+        </section>
+    </div>
+
+    <!-- Dots Indicator for Welcome Page -->
+    <div class="dots-container" id="welcome-dots">
+        <span class="dot" onclick="navigateToSlide(0)"></span>
+        <span class="dot" onclick="navigateToSlide(1)"></span>
+        <span class="dot" onclick="navigateToSlide(2)"></span>
+    </div>
+
+    <!-- UI Section (Initially Hidden) -->
+    <div id="ui-section" class="container" style="display: none;">
         <div class="header">
             <h1>Mr Crab's Invoicer</h1>
             <p class="bot-label">bot</p>
@@ -90,7 +126,6 @@
         </div>
 
         <div id="error-messages" class="error-message" style="display: none;"></div>
-        <button class="create-btn" onclick="handleFormSubmit()">Create Invoice</button>
     </div>
 
     <script src="scripts.js"></script>
